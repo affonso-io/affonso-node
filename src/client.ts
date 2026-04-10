@@ -3,7 +3,10 @@ import { Affiliates } from "./resources/affiliates.js";
 import { Clicks } from "./resources/clicks.js";
 import { Commissions } from "./resources/commissions.js";
 import { Coupons } from "./resources/coupons.js";
+import { EmbedTokens } from "./resources/embed-tokens.js";
+import { Marketplace } from "./resources/marketplace.js";
 import { Payouts } from "./resources/payouts.js";
+import { Program } from "./resources/program.js";
 import { Referrals } from "./resources/referrals.js";
 
 export interface AffonsoConfig {
@@ -24,6 +27,9 @@ export class Affonso {
 	readonly commissions: Commissions;
 	readonly coupons: Coupons;
 	readonly payouts: Payouts;
+	readonly program: Program;
+	readonly embedTokens: EmbedTokens;
+	readonly marketplace: Marketplace;
 
 	constructor(apiKey: string, config?: AffonsoConfig) {
 		if (!apiKey) {
@@ -48,5 +54,8 @@ export class Affonso {
 		this.commissions = new Commissions(httpClient);
 		this.coupons = new Coupons(httpClient);
 		this.payouts = new Payouts(httpClient);
+		this.program = new Program(httpClient);
+		this.embedTokens = new EmbedTokens(httpClient);
+		this.marketplace = new Marketplace(httpClient);
 	}
 }
