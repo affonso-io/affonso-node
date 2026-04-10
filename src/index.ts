@@ -97,5 +97,85 @@ export type {
 	PayoutUpdateParams,
 } from "./resources/payouts.js";
 
+// Resource types — Program Settings
+export type {
+	ProgramSettings,
+	ProgramSettingsUpdateParams,
+} from "./resources/program-settings.js";
+
+// Resource types — Payment Terms
+export type {
+	CommissionDuration,
+	CommissionType,
+	PaymentFrequency,
+	PaymentTerms,
+	PaymentTermsUpdateParams,
+} from "./resources/program-payment-terms.js";
+
+// Resource types — Tracking
+export type {
+	TrackingPostback,
+	TrackingSettings,
+	TrackingSettingsUpdateParams,
+} from "./resources/program-tracking.js";
+
+// Resource types — Restrictions
+export type {
+	Restrictions,
+	RestrictionsUpdateParams,
+} from "./resources/program-restrictions.js";
+
+// Resource types — Groups
+export type {
+	Group,
+	GroupCreateParams,
+	GroupExpandField,
+	GroupIncentive,
+	GroupListParams,
+	GroupRetrieveParams,
+	GroupUpdateParams,
+} from "./resources/program-groups.js";
+
+// Resource types — Creatives
+export type {
+	Creative,
+	CreativeCreateParams,
+	CreativeListParams,
+	CreativeUpdateParams,
+} from "./resources/program-creatives.js";
+
+// Resource types — Notifications
+export type {
+	Notification,
+	NotificationUpdateParams,
+} from "./resources/program-notifications.js";
+
+// Resource types — Portal
+export type {
+	PortalCustomTexts,
+	PortalSettings,
+	PortalSettingsUpdateParams,
+} from "./resources/program-portal.js";
+
+// Resource types — Fraud Rules
+export type {
+	FraudRuleConfig,
+	FraudRuleMode,
+	FraudRules,
+	FraudRulesUpdateParams,
+} from "./resources/program-fraud-rules.js";
+
+// Resource types — Embed Tokens
+export type {
+	EmbedToken,
+	EmbedTokenCreateParams,
+} from "./resources/embed-tokens.js";
+
+// Resource types — Marketplace
+export type {
+	MarketplaceListParams,
+	MarketplaceProgram,
+} from "./resources/marketplace.js";
+
 // Default export
 export { Affonso as default } from "./client.js";
