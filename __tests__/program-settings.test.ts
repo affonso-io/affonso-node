@@ -29,7 +29,7 @@ const PROGRAM_FIXTURE = {
 	description: "A great program",
 	website_url: "https://example.com",
 	logo_url: null,
-	auto_approve: false,
+	access_mode: "private",
 	affiliate_links_enabled: true,
 	plan: "pro",
 	plan_features: {},
@@ -49,7 +49,7 @@ describe("Program Settings", () => {
 		const program = await client.program.retrieve();
 		expect(program.id).toBe("prog_1");
 		expect(program.name).toBe("My Program");
-		expect(program.auto_approve).toBe(false);
+		expect(program.access_mode).toBe("private");
 	});
 
 	it("update sends PATCH with correct body", async () => {
@@ -57,19 +57,19 @@ describe("Program Settings", () => {
 			expect(init.method).toBe("PATCH");
 			const body = JSON.parse(init.body as string);
 			expect(body.name).toBe("Updated Program");
-			expect(body.auto_approve).toBe(true);
+			expect(body.access_mode).toBe("PUBLIC");
 			return {
 				status: 200,
 				body: {
 					success: true,
-					data: { ...PROGRAM_FIXTURE, name: "Updated Program", auto_approve: true },
+					data: { ...PROGRAM_FIXTURE, name: "Updated Program", access_mode: "public" },
 				},
 			};
 		});
 
 		const program = await client.program.update({
 			name: "Updated Program",
-			auto_approve: true,
+			access_mode: "PUBLIC",
 		});
 		expect(program.name).toBe("Updated Program");
 	});

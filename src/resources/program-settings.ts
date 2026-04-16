@@ -10,7 +10,7 @@ export interface ProgramSettings {
 	description: string | null;
 	website_url: string | null;
 	logo_url: string | null;
-	auto_approve: boolean;
+	access_mode: string;
 	affiliate_links_enabled: boolean;
 	plan: string | null;
 	plan_features: Record<string, unknown> | null;
@@ -26,7 +26,7 @@ export interface ProgramSettingsUpdateParams {
 	description?: string | null;
 	website_url?: string | null;
 	logo_url?: string | null;
-	auto_approve?: boolean;
+	access_mode?: "PUBLIC" | "PRIVATE" | "INVITE";
 	affiliate_links_enabled?: boolean;
 }
 
