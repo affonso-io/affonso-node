@@ -10,6 +10,7 @@ import { Program } from "./resources/program.js";
 import { Referrals } from "./resources/referrals.js";
 
 export interface AffonsoConfig {
+	signingSecret?: string;
 	baseUrl?: string;
 	timeout?: number;
 	maxRetries?: number;
@@ -40,6 +41,7 @@ export class Affonso {
 
 		const httpConfig: HttpClientConfig = {
 			apiKey,
+			signingSecret: config?.signingSecret,
 			baseUrl: config?.baseUrl ?? DEFAULT_BASE_URL,
 			timeout: config?.timeout ?? DEFAULT_TIMEOUT,
 			maxRetries: config?.maxRetries ?? DEFAULT_MAX_RETRIES,
