@@ -1,33 +1,29 @@
 import type { HttpClient } from "../http.js";
 
-// --- Response Types ---
-
 export interface EmbedToken {
 	publicToken: string;
 	expiresAt: string;
 	link: string;
 	portalUrl: string;
-	partnershipStatus: string | null;
+	partnershipStatus: string;
 }
 
-// --- Input Types ---
+export interface EmbedPartner {
+	email: string;
+	name?: string;
+	image?: string;
+}
 
 export interface EmbedTokenCreateParams {
-	affiliate_id?: string;
-	external_user_id?: string;
-	email?: string;
-	name?: string;
+	programId: string;
+	partner: EmbedPartner;
+	groupId?: string;
+	externalUserId?: string;
 	metadata?: Record<string, unknown>;
 }
 
-// --- Resource ---
-
 export class EmbedTokens {
-	private readonly httpClient: HttpClient;
-
-	constructor(httpClient: HttpClient) {
-		this.httpClient = httpClient;
-	}
+	constructor(private readonly httpClient: HttpClient) {}
 
 	async create(params: EmbedTokenCreateParams): Promise<EmbedToken> {
 		const response = await this.httpClient.request<{ data: EmbedToken }>({

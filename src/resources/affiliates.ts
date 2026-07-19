@@ -63,6 +63,13 @@ export interface OnboardingQuestion {
 }
 
 export interface OnboardingResponses {
+	form_name: string;
+	form_description: string | null;
+	completed_at: string;
+	questions: OnboardingQuestion[];
+}
+
+export interface AffiliateOnboardingResponses {
 	form_id: string;
 	form_name: string;
 	form_description: string | null;
@@ -90,7 +97,7 @@ export interface Affiliate {
 	email: string | null;
 	tracking_id: string | null;
 	source: string | null;
-	partnership_status: string | null;
+	partnership_status: Uppercase<PartnershipStatus> | null;
 	onboarding_completed: boolean;
 	program_id: string | null;
 	group_id: string | null;
@@ -242,8 +249,8 @@ export class Affiliates {
 		});
 	}
 
-	async retrieveOnboardingResponses(id: string): Promise<OnboardingResponses> {
-		const response = await this.httpClient.request<{ data: OnboardingResponses }>({
+	async retrieveOnboardingResponses(id: string): Promise<AffiliateOnboardingResponses> {
+		const response = await this.httpClient.request<{ data: AffiliateOnboardingResponses }>({
 			method: "GET",
 			path: `/affiliates/${encodeURIComponent(id)}/onboarding-responses`,
 		});
@@ -253,8 +260,8 @@ export class Affiliates {
 	async submitOnboardingResponses(
 		id: string,
 		params: OnboardingResponseSubmitParams,
-	): Promise<OnboardingResponses> {
-		const response = await this.httpClient.request<{ data: OnboardingResponses }>({
+	): Promise<AffiliateOnboardingResponses> {
+		const response = await this.httpClient.request<{ data: AffiliateOnboardingResponses }>({
 			method: "POST",
 			path: `/affiliates/${encodeURIComponent(id)}/onboarding-responses`,
 			body: params,

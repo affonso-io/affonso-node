@@ -27,8 +27,13 @@ describe("Embed Tokens", () => {
 			expect(url).toContain("/embed/token");
 			expect(init.method).toBe("POST");
 			const body = JSON.parse(init.body as string);
-			expect(body.email).toBe("user@test.com");
-			expect(body.name).toBe("Test User");
+			expect(body.programId).toBe("prog_1");
+			expect(body.partner).toEqual({
+				email: "user@test.com",
+				name: "Test User",
+				image: "https://example.com/avatar.png",
+			});
+			expect(body.externalUserId).toBe("user_1");
 			return {
 				status: 201,
 				body: {
@@ -45,8 +50,13 @@ describe("Embed Tokens", () => {
 		});
 
 		const token = await client.embedTokens.create({
-			email: "user@test.com",
-			name: "Test User",
+			programId: "prog_1",
+			partner: {
+				email: "user@test.com",
+				name: "Test User",
+				image: "https://example.com/avatar.png",
+			},
+			externalUserId: "user_1",
 		});
 		expect(token.publicToken).toBe("pt_abc123");
 		expect(token.portalUrl).toBe("https://portal.example.com");

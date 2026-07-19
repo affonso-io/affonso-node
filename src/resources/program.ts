@@ -7,8 +7,8 @@ import { ProgramPaymentTerms } from "./program-payment-terms.js";
 import { ProgramPortal } from "./program-portal.js";
 import { ProgramRestrictions } from "./program-restrictions.js";
 import {
-	ProgramSettingsResource,
 	type ProgramSettings,
+	ProgramSettingsResource,
 	type ProgramSettingsUpdateParams,
 } from "./program-settings.js";
 import { ProgramTracking } from "./program-tracking.js";

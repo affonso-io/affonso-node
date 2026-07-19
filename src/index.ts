@@ -37,6 +37,7 @@ export type {
 	AffiliateCreateParams,
 	AffiliateExpandField,
 	AffiliateListParams,
+	AffiliateOnboardingResponses,
 	AffiliatePortalToken,
 	AffiliatePromoCode,
 	AffiliateRetrieveParams,
@@ -118,6 +119,7 @@ export type {
 	CouponCreateParams,
 	CouponListParams,
 	CouponProvider,
+	CouponProviderRecord,
 	CouponRetrieveParams,
 	DiscountType,
 	Duration,
@@ -209,6 +211,7 @@ export type {
 
 // Resource types — Embed Tokens
 export type {
+	EmbedPartner,
 	EmbedToken,
 	EmbedTokenCreateParams,
 } from "./resources/embed-tokens.js";
@@ -216,7 +219,9 @@ export type {
 // Resource types — Marketplace
 export type {
 	MarketplaceListParams,
+	MarketplaceCommission,
 	MarketplaceProgram,
+	MarketplaceTerms,
 } from "./resources/marketplace.js";
 
 // Default export

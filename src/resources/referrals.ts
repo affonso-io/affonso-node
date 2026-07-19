@@ -12,8 +12,9 @@ export interface Referral {
 	program_id: string;
 	email: string | null;
 	customer_id: string | null;
+	external_user_id: string | null;
 	subscription_id: string | null;
-	status: string;
+	status: ReferralStatus;
 	name: string | null;
 	metadata: unknown;
 	created_at: string;
@@ -35,6 +36,7 @@ export interface ReferralStats {
 
 export interface ReferralListParams extends CursorPaginationParams {
 	affiliate_id?: string;
+	external_user_id?: string;
 	order?: "asc" | "desc";
 	status?: ReferralStatus;
 	expand?: string;

@@ -28,6 +28,7 @@ const REFERRAL_FIXTURE = {
 	program_id: "prog_1",
 	email: "customer@test.de",
 	customer_id: null,
+	external_user_id: "user_1",
 	subscription_id: null,
 	status: "lead",
 	name: null,
@@ -59,6 +60,7 @@ describe("Referrals", () => {
 			expect(url).toContain("starting_after=ref_0");
 			expect(url).toContain("status=customer");
 			expect(url).toContain("expand=affiliate");
+			expect(url).toContain("external_user_id=user_1");
 			return {
 				status: 200,
 				body: { success: true, data: [], has_more: false },
@@ -69,6 +71,7 @@ describe("Referrals", () => {
 			starting_after: "ref_0",
 			status: "customer",
 			expand: "affiliate",
+			external_user_id: "user_1",
 		});
 	});
 

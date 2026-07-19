@@ -32,7 +32,7 @@ export interface PayoutTransaction {
 		amount: number;
 		commission_amount: number;
 		created_at: string;
-	};
+	} | null;
 	created_at: string;
 }
 
