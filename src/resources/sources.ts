@@ -2,9 +2,10 @@ import type { HttpClient } from "../http.js";
 import type { EventResult } from "./events.js";
 
 export type SourceAdapter = "custom" | "segment_webhook";
+export type SourceSigningSecrets = Partial<Record<SourceAdapter | "segment", string>>;
 
 export interface SegmentTrackParams {
-	type?: "track";
+	type: "track";
 	event: string;
 	messageId: string;
 	userId?: string;
@@ -23,6 +24,7 @@ export class Sources {
 			path: `/sources/${encodeURIComponent(source)}/events`,
 			body: params,
 			signed: true,
+			signingSecret: this.httpClient.getSourceSigningSecret(source),
 		});
 		return response.data;
 	}
@@ -33,6 +35,7 @@ export class Sources {
 			path: "/sources/segment/events",
 			body: params,
 			signed: true,
+			signingSecret: this.httpClient.getSourceSigningSecret("segment"),
 		});
 		return response.data;
 	}

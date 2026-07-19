@@ -7,6 +7,7 @@ const VERSION = typeof __SDK_VERSION__ !== "undefined" ? __SDK_VERSION__ : "0.1.
 export interface HttpClientConfig {
 	apiKey: string;
 	signingSecret?: string;
+	sourceSigningSecrets?: Record<string, string>;
 	baseUrl: string;
 	timeout: number;
 	maxRetries: number;
@@ -73,6 +74,10 @@ export class HttpClient {
 		this.config = config;
 	}
 
+	getSourceSigningSecret(source: string): string | undefined {
+		return this.config.sourceSigningSecrets?.[source] ?? this.config.signingSecret;
+	}
+
 	async request<T>(opts: RequestOptions): Promise<T> {
 		const url = `${this.config.baseUrl}${opts.path}${opts.query ? buildQueryString(opts.query) : ""}`;
 		const serializedBody = opts.body === undefined ? undefined : JSON.stringify(opts.body);
@@ -87,11 +92,12 @@ export class HttpClient {
 			headers["User-Agent"] = `affonso-sdk/${VERSION}`;
 		}
 
-		if (opts.signed && this.config.signingSecret && serializedBody !== undefined) {
+		const signingSecret = opts.signingSecret ?? this.config.signingSecret;
+		if (opts.signed && signingSecret && serializedBody !== undefined) {
 			const timestamp = Math.floor(Date.now() / 1000).toString();
 			headers["X-Affonso-Timestamp"] = timestamp;
 			headers["X-Affonso-Signature"] = await createRequestSignature(
-				this.config.signingSecret,
+				signingSecret,
 				timestamp,
 				serializedBody,
 			);

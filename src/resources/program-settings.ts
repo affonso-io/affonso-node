@@ -2,6 +2,14 @@ import type { HttpClient } from "../http.js";
 
 // --- Response Types ---
 
+export type ProgramPlanTier = "launch" | "growth" | "elite" | "enterprise";
+
+export interface ProgramPlan {
+	tier: ProgramPlanTier | null;
+	postbacks: boolean;
+	groups_limit: number | null;
+}
+
 export interface ProgramSettings {
 	id: string;
 	name: string;
@@ -15,6 +23,7 @@ export interface ProgramSettings {
 	status: string;
 	affiliate_links_enabled: boolean;
 	default_referral_parameter: string;
+	plan: ProgramPlan;
 	created_at: string;
 	updated_at: string;
 }

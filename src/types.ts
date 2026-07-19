@@ -61,4 +61,5 @@ export interface RequestOptions {
 	body?: unknown;
 	headers?: Record<string, string>;
 	signed?: boolean;
+	signingSecret?: string;
 }

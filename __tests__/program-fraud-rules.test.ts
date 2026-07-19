@@ -45,8 +45,17 @@ describe("Program Fraud Rules", () => {
 		});
 
 		const rules = await client.program.fraudRules.retrieve();
-		expect(rules.self_referral_mode).toBe("block");
-		expect(rules.duplicate_payout_mode).toBe("detect");
+		expect(rules?.self_referral_mode).toBe("block");
+		expect(rules?.duplicate_payout_mode).toBe("detect");
+	});
+
+	it("retrieve returns null when fraud rules are not configured", async () => {
+		const client = createMockClient(() => ({
+			status: 200,
+			body: { success: true, data: null },
+		}));
+
+		expect(await client.program.fraudRules.retrieve()).toBeNull();
 	});
 
 	it("update sends PATCH with correct body", async () => {

@@ -21,8 +21,8 @@ export type PortalSettingsUpdateParams = Partial<PortalSettings>;
 export class ProgramPortal {
 	constructor(private readonly httpClient: HttpClient) {}
 
-	async retrieve(): Promise<PortalSettings> {
-		const response = await this.httpClient.request<{ data: PortalSettings }>({
+	async retrieve(): Promise<PortalSettings | null> {
+		const response = await this.httpClient.request<{ data: PortalSettings | null }>({
 			method: "GET",
 			path: "/program/portal",
 		});

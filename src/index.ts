@@ -106,6 +106,7 @@ export type { SignupCreateParams } from "./resources/signups.js";
 export type {
 	SegmentTrackParams,
 	SourceAdapter,
+	SourceSigningSecrets,
 } from "./resources/sources.js";
 export type {
 	TrackingDiscount,
@@ -137,6 +138,8 @@ export type {
 
 // Resource types — Program Settings
 export type {
+	ProgramPlan,
+	ProgramPlanTier,
 	ProgramSettings,
 	ProgramSettingsUpdateParams,
 } from "./resources/program-settings.js";

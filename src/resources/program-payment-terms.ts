@@ -58,8 +58,8 @@ export interface PaymentTermsUpdateParams {
 export class ProgramPaymentTerms {
 	constructor(private readonly httpClient: HttpClient) {}
 
-	async retrieve(): Promise<PaymentTerms> {
-		const response = await this.httpClient.request<{ data: PaymentTerms }>({
+	async retrieve(): Promise<PaymentTerms | null> {
+		const response = await this.httpClient.request<{ data: PaymentTerms | null }>({
 			method: "GET",
 			path: "/program/payment-terms",
 		});

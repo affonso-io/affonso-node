@@ -48,8 +48,17 @@ describe("Program Portal", () => {
 		});
 
 		const portal = await client.program.portal.retrieve();
-		expect(portal.primary_color).toBe("#000000");
-		expect(portal.single_program_portal).toBe(true);
+		expect(portal?.primary_color).toBe("#000000");
+		expect(portal?.single_program_portal).toBe(true);
+	});
+
+	it("retrieve returns null when portal settings are not configured", async () => {
+		const client = createMockClient(() => ({
+			status: 200,
+			body: { success: true, data: null },
+		}));
+
+		expect(await client.program.portal.retrieve()).toBeNull();
 	});
 
 	it("update sends PATCH with correct body", async () => {

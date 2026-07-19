@@ -19,8 +19,8 @@ export type RestrictionsUpdateParams = Partial<Restrictions>;
 export class ProgramRestrictions {
 	constructor(private readonly httpClient: HttpClient) {}
 
-	async retrieve(): Promise<Restrictions> {
-		const response = await this.httpClient.request<{ data: Restrictions }>({
+	async retrieve(): Promise<Restrictions | null> {
+		const response = await this.httpClient.request<{ data: Restrictions | null }>({
 			method: "GET",
 			path: "/program/restrictions",
 		});

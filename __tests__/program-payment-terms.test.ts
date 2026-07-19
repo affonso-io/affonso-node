@@ -56,9 +56,18 @@ describe("Program Payment Terms", () => {
 		});
 
 		const terms = await client.program.paymentTerms.retrieve();
-		expect(terms.commission_type).toBe("percentage");
-		expect(terms.commission_rate).toBe(20);
-		expect(terms.cookie_lifetime).toBe(30);
+		expect(terms?.commission_type).toBe("percentage");
+		expect(terms?.commission_rate).toBe(20);
+		expect(terms?.cookie_lifetime).toBe(30);
+	});
+
+	it("retrieve returns null when payment terms are not configured", async () => {
+		const client = createMockClient(() => ({
+			status: 200,
+			body: { success: true, data: null },
+		}));
+
+		expect(await client.program.paymentTerms.retrieve()).toBeNull();
 	});
 
 	it("update sends PATCH with correct body", async () => {

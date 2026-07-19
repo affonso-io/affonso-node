@@ -1,6 +1,7 @@
 import type { HttpClient } from "../http.js";
 import { OffsetPage } from "../pagination.js";
 import type { DeleteResponse, OffsetPaginationMeta, OffsetPaginationParams } from "../types.js";
+import type { OnboardingQuestionType } from "./onboarding-form.js";
 
 // --- Response Types (from OpenAPI spec + transformAffiliate) ---
 
@@ -55,11 +56,11 @@ export interface PayoutMethodResponse {
 export interface OnboardingQuestion {
 	id: string;
 	question: string;
-	type: string;
+	type: OnboardingQuestionType;
 	is_required: boolean;
 	options: string[];
 	order: number;
-	answer: unknown;
+	answer: string | string[] | null;
 }
 
 export interface OnboardingResponses {

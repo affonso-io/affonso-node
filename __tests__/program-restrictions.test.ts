@@ -46,8 +46,17 @@ describe("Program Restrictions", () => {
 		});
 
 		const restrictions = await client.program.restrictions.retrieve();
-		expect(restrictions.websites).toBe(true);
-		expect(restrictions.mobile_traffic).toBe(false);
+		expect(restrictions?.websites).toBe(true);
+		expect(restrictions?.mobile_traffic).toBe(false);
+	});
+
+	it("retrieve returns null when restrictions are not configured", async () => {
+		const client = createMockClient(() => ({
+			status: 200,
+			body: { success: true, data: null },
+		}));
+
+		expect(await client.program.restrictions.retrieve()).toBeNull();
 	});
 
 	it("update sends PATCH with correct body", async () => {

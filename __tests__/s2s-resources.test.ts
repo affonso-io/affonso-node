@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Affonso } from "../src/client.js";
 
@@ -38,7 +39,10 @@ const MILESTONE = {
 	source_event_id: "source_evt_2",
 };
 
-function createClient(handler: (url: string, init: RequestInit) => unknown) {
+function createClient(
+	handler: (url: string, init: RequestInit) => unknown,
+	config?: { sourceSigningSecrets?: { custom?: string; segment?: string } },
+) {
 	const fetch = vi.fn(async (url: string, init: RequestInit) => ({
 		ok: true,
 		status: 201,
@@ -50,6 +54,7 @@ function createClient(handler: (url: string, init: RequestInit) => unknown) {
 		fetch,
 		maxRetries: 0,
 		signingSecret: "whsec_test",
+		sourceSigningSecrets: config?.sourceSigningSecrets,
 	});
 }
 
@@ -133,6 +138,26 @@ describe("S2S resources", () => {
 			return { success: true, data: { ...MILESTONE, event_name: "kyc_passed" } };
 		});
 		expect((await client.sources.ingest("custom", params)).event_name).toBe("kyc_passed");
+	});
+
+	it("uses the custom source secret when configured", async () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date("2026-07-19T12:00:00.000Z"));
+		const params = { event_name: "kyc_passed", referral_id: "ref_1", event_type: "milestone" };
+		const client = createClient(
+			(_url, init) => {
+				const timestamp = "1784462400";
+				const expectedSignature = createHmac("sha256", "whsec_custom")
+					.update(`${timestamp}.${JSON.stringify(params)}`)
+					.digest("hex");
+				expect(init.headers).toMatchObject({
+					"X-Affonso-Signature": expectedSignature,
+				});
+				return { success: true, data: { ...MILESTONE, event_name: "kyc_passed" } };
+			},
+			{ sourceSigningSecrets: { custom: "whsec_custom" } },
+		);
+		await client.sources.ingest("custom", params);
 	});
 
 	it("ingests a signed Segment event", async () => {

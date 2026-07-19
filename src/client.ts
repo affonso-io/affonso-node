@@ -12,11 +12,12 @@ import { Payouts } from "./resources/payouts.js";
 import { Program } from "./resources/program.js";
 import { Referrals } from "./resources/referrals.js";
 import { Signups } from "./resources/signups.js";
-import { Sources } from "./resources/sources.js";
+import { type SourceSigningSecrets, Sources } from "./resources/sources.js";
 import { Tracking } from "./resources/tracking.js";
 
 export interface AffonsoConfig {
 	signingSecret?: string;
+	sourceSigningSecrets?: SourceSigningSecrets;
 	baseUrl?: string;
 	timeout?: number;
 	maxRetries?: number;
@@ -54,6 +55,7 @@ export class Affonso {
 		const httpConfig: HttpClientConfig = {
 			apiKey,
 			signingSecret: config?.signingSecret,
+			sourceSigningSecrets: config?.sourceSigningSecrets,
 			baseUrl: config?.baseUrl ?? DEFAULT_BASE_URL,
 			timeout: config?.timeout ?? DEFAULT_TIMEOUT,
 			maxRetries: config?.maxRetries ?? DEFAULT_MAX_RETRIES,

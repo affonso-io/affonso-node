@@ -35,12 +35,16 @@ const affonso = new Affonso("sk_live_...", {
   baseUrl: "https://api.affonso.io/v1", // default
   timeout: 30_000,                       // default: 30 seconds
   maxRetries: 2,                         // retries 429 and 5xx responses
-  signingSecret: "your-s2s-secret",      // optional HMAC signing
+  signingSecret: "your-s2s-secret",      // optional conversion/event HMAC signing
+  sourceSigningSecrets: {                 // optional per-source HMAC signing
+    custom: "your-custom-source-secret",
+    segment: "your-segment-source-secret",
+  },
   fetch: customFetch,                    // optional fetch implementation
 });
 ```
 
-When `signingSecret` is set, the SDK automatically signs conversion, refund, event, and source-ingestion requests. The signature covers the exact JSON string sent in the request body.
+When `signingSecret` is set, the SDK automatically signs conversion, refund, event, and source-ingestion requests. Use `sourceSigningSecrets` when the API configures a different secret per source adapter. The signature covers the exact JSON string sent in the request body.
 
 ## Resources
 

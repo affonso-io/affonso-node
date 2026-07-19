@@ -20,8 +20,8 @@ export type FraudRulesUpdateParams = Partial<FraudRules>;
 export class ProgramFraudRules {
 	constructor(private readonly httpClient: HttpClient) {}
 
-	async retrieve(): Promise<FraudRules> {
-		const response = await this.httpClient.request<{ data: FraudRules }>({
+	async retrieve(): Promise<FraudRules | null> {
+		const response = await this.httpClient.request<{ data: FraudRules | null }>({
 			method: "GET",
 			path: "/program/fraud-rules",
 		});
