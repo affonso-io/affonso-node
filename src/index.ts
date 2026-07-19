@@ -37,18 +37,30 @@ export type {
 	AffiliateCreateParams,
 	AffiliateExpandField,
 	AffiliateListParams,
+	AffiliatePortalToken,
 	AffiliatePromoCode,
 	AffiliateRetrieveParams,
 	AffiliateUpdateParams,
 	CommissionOverride,
 	InvoiceDetails,
 	OnboardingQuestion,
+	OnboardingResponseSubmitParams,
 	OnboardingResponses,
 	PartnershipStatus,
 	PayoutDetails,
 	PayoutMethod,
 	PayoutMethodResponse,
 } from "./resources/affiliates.js";
+
+// Resource types — Onboarding Form
+export type {
+	OnboardingForm,
+	OnboardingFormCreateParams,
+	OnboardingFormQuestion,
+	OnboardingFormUpdateParams,
+	OnboardingQuestionInput,
+	OnboardingQuestionType,
+} from "./resources/onboarding-form.js";
 
 // Resource types — Referrals
 export type {
@@ -75,6 +87,30 @@ export type {
 	CommissionUpdateParams,
 	SalesStatus,
 } from "./resources/commissions.js";
+
+// Resource types — Server-side tracking
+export type {
+	Conversion,
+	ConversionCreateParams,
+	ConversionInterval,
+	ConversionRefundParams,
+} from "./resources/conversions.js";
+export type {
+	EventCreateParams,
+	EventResult,
+	EventType,
+	S2SEvent,
+} from "./resources/events.js";
+export type { SignupCreateParams } from "./resources/signups.js";
+export type {
+	SegmentTrackParams,
+	SourceAdapter,
+} from "./resources/sources.js";
+export type {
+	TrackingDiscount,
+	TrackingResult,
+	TrackingTrackParams,
+} from "./resources/tracking.js";
 
 // Resource types — Coupons
 export type {

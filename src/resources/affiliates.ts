@@ -43,6 +43,8 @@ export interface InvoiceDetails {
 	country: string;
 	vat_id: string | null;
 	tax_id: string | null;
+	vat_validated: boolean;
+	vat_validated_at: string | null;
 }
 
 export interface PayoutMethodResponse {
@@ -61,10 +63,25 @@ export interface OnboardingQuestion {
 }
 
 export interface OnboardingResponses {
+	form_id: string;
 	form_name: string;
 	form_description: string | null;
-	completed_at: string;
+	completed_at: string | null;
 	questions: OnboardingQuestion[];
+}
+
+export interface OnboardingResponseSubmitParams {
+	responses: Array<{
+		question_id: string;
+		answer: string | string[];
+	}>;
+	mark_complete?: boolean;
+}
+
+export interface AffiliatePortalToken {
+	token: string;
+	portalUrl: string;
+	expiresAt: string;
 }
 
 export interface Affiliate {
@@ -223,5 +240,33 @@ export class Affiliates {
 			method: "DELETE",
 			path: `/affiliates/${encodeURIComponent(id)}`,
 		});
+	}
+
+	async retrieveOnboardingResponses(id: string): Promise<OnboardingResponses> {
+		const response = await this.httpClient.request<{ data: OnboardingResponses }>({
+			method: "GET",
+			path: `/affiliates/${encodeURIComponent(id)}/onboarding-responses`,
+		});
+		return response.data;
+	}
+
+	async submitOnboardingResponses(
+		id: string,
+		params: OnboardingResponseSubmitParams,
+	): Promise<OnboardingResponses> {
+		const response = await this.httpClient.request<{ data: OnboardingResponses }>({
+			method: "POST",
+			path: `/affiliates/${encodeURIComponent(id)}/onboarding-responses`,
+			body: params,
+		});
+		return response.data;
+	}
+
+	async createPortalToken(id: string): Promise<AffiliatePortalToken> {
+		const response = await this.httpClient.request<{ data: AffiliatePortalToken }>({
+			method: "POST",
+			path: `/affiliates/${encodeURIComponent(id)}/portal-token`,
+		});
+		return response.data;
 	}
 }
