@@ -102,6 +102,17 @@ describe("Coupons", () => {
 		});
 	});
 
+	it("retrieve sends GET with the encoded ID and expand query", async () => {
+		const client = createMockClient((url, init) => {
+			expect(url).toBe("https://api.test.io/v1/coupons/coup%2F1?expand=affiliate");
+			expect(init.method).toBe("GET");
+			expect(init.body).toBeUndefined();
+			return { status: 200, body: { success: true, data: COUPON_FIXTURE } };
+		});
+
+		expect((await client.coupons.retrieve("coup/1", { expand: "affiliate" })).id).toBe("coup_1");
+	});
+
 	it("no update method exists (per OpenAPI spec)", () => {
 		const client = createMockClient(() => ({ status: 200, body: {} }));
 		// @ts-expect-error — update should not exist on Coupons

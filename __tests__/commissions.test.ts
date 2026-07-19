@@ -91,6 +91,19 @@ describe("Commissions", () => {
 		});
 	});
 
+	it("retrieve sends GET with the encoded ID and expand query", async () => {
+		const client = createMockClient((url, init) => {
+			expect(url).toBe("https://api.test.io/v1/commissions/com%2F1?expand=affiliate%2Creferral");
+			expect(init.method).toBe("GET");
+			expect(init.body).toBeUndefined();
+			return { status: 200, body: { success: true, data: COMMISSION_FIXTURE } };
+		});
+
+		expect((await client.commissions.retrieve("com/1", { expand: "affiliate,referral" })).id).toBe(
+			"com_1",
+		);
+	});
+
 	it("update sends PUT with spec-correct fields", async () => {
 		const client = createMockClient((_url, init) => {
 			expect(init.method).toBe("PUT");

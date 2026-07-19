@@ -85,6 +85,17 @@ describe("Program Creatives", () => {
 		expect(creative.name).toBe("Banner 2");
 	});
 
+	it("retrieve sends GET with the encoded creative ID", async () => {
+		const client = createMockClient((url, init) => {
+			expect(url).toBe("https://api.test.io/v1/program/creatives/cr%2F1");
+			expect(init.method).toBe("GET");
+			expect(init.body).toBeUndefined();
+			return { status: 200, body: { success: true, data: CREATIVE_FIXTURE } };
+		});
+
+		expect((await client.program.creatives.retrieve("cr/1")).id).toBe("cr_1");
+	});
+
 	it("update sends PATCH with correct body", async () => {
 		const client = createMockClient((_url, init) => {
 			expect(init.method).toBe("PATCH");
