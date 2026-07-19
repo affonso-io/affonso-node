@@ -5,16 +5,18 @@ import type { HttpClient } from "../http.js";
 export interface ProgramSettings {
 	id: string;
 	name: string;
+	slug: string | null;
 	tagline: string | null;
 	category: string | null;
 	description: string | null;
-	website_url: string | null;
+	website_url: string;
 	logo_url: string | null;
-	access_mode: string;
+	access_mode: "public" | "private" | "invite";
+	status: string;
 	affiliate_links_enabled: boolean;
-	plan: string | null;
-	plan_features: Record<string, unknown> | null;
+	default_referral_parameter: string;
 	created_at: string;
+	updated_at: string;
 }
 
 // --- Input Types ---
@@ -24,7 +26,7 @@ export interface ProgramSettingsUpdateParams {
 	tagline?: string | null;
 	category?: string | null;
 	description?: string | null;
-	website_url?: string | null;
+	website_url?: string;
 	logo_url?: string | null;
 	access_mode?: "PUBLIC" | "PRIVATE" | "INVITE";
 	affiliate_links_enabled?: boolean;

@@ -24,23 +24,25 @@ function createMockClient(
 const PAYMENT_TERMS_FIXTURE = {
 	commission_type: "percentage",
 	commission_rate: 20,
-	commission_duration: "forever",
-	commission_duration_value: null,
+	commission_duration: "lifetime",
+	commissions_limit: null,
+	commissions_hold_days: 14,
 	payment_threshold: 50,
 	payment_frequency: "monthly",
+	payment_methods: ["paypal", "wise"],
 	cookie_lifetime: 30,
 	auto_payout: false,
-	invoice_required: false,
-	invoice_company_name: null,
-	invoice_address: null,
-	invoice_city: null,
-	invoice_state: null,
-	invoice_postal_code: null,
-	invoice_country: null,
-	invoice_vat_id: null,
-	owner_first_name: null,
-	owner_last_name: null,
-	owner_email: null,
+	invoice_rule: "owner_provides",
+	invoice_prefix: "AFF",
+	require_tax_forms: true,
+	owner_company_name: "Affonso GmbH",
+	owner_address_line_1: "Main Street 1",
+	owner_address_line_2: null,
+	owner_city: "Berlin",
+	owner_postal_code: "10115",
+	owner_country: "DE",
+	owner_vat_id: "DE123",
+	owner_vat_rate: 19,
 };
 
 describe("Program Payment Terms", () => {
@@ -65,6 +67,8 @@ describe("Program Payment Terms", () => {
 			const body = JSON.parse(init.body as string);
 			expect(body.commission_rate).toBe(30);
 			expect(body.auto_payout).toBe(true);
+			expect(body.commission_duration).toBe("payment_limited");
+			expect(body.commissions_limit).toBe(12);
 			return {
 				status: 200,
 				body: {
@@ -77,6 +81,8 @@ describe("Program Payment Terms", () => {
 		const terms = await client.program.paymentTerms.update({
 			commission_rate: 30,
 			auto_payout: true,
+			commission_duration: "payment_limited",
+			commissions_limit: 12,
 		});
 		expect(terms.commission_rate).toBe(30);
 	});

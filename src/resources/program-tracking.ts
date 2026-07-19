@@ -1,39 +1,46 @@
 import type { HttpClient } from "../http.js";
 
-// --- Response Types ---
+export type TrackingTemplateMacro =
+	| "{tracking_id}"
+	| "{affiliate_id}"
+	| "{program_id}"
+	| "{program_slug}"
+	| "{affonso_id}"
+	| "{program_name}"
+	| "{affiliate_name}"
+	| "{group_id}"
+	| "{group_name}"
+	| "{timestamp}"
+	| "{randint}";
 
-export interface TrackingPostback {
-	url: string;
-	event: string;
-	enabled: boolean;
-}
+export type TrackingTemplateEntry =
+	| { key: string; value: string; type: "literal" }
+	| { key: string; value: TrackingTemplateMacro; type: "macro" };
 
 export interface TrackingSettings {
 	default_referral_parameter: string;
 	enabled_referral_parameters: string[];
-	track_email: boolean;
-	track_name: boolean;
-	postbacks: TrackingPostback[];
+	email_tracking_enabled: boolean;
+	name_tracking_enabled: boolean;
+	postbacks_enabled: boolean;
+	append_affonso_id_enabled: boolean;
+	tracking_template_enabled: boolean;
+	tracking_template: TrackingTemplateEntry[] | null;
 }
-
-// --- Input Types ---
 
 export interface TrackingSettingsUpdateParams {
 	default_referral_parameter?: string;
 	enabled_referral_parameters?: string[];
-	track_email?: boolean;
-	track_name?: boolean;
-	postbacks?: TrackingPostback[];
+	email_tracking_enabled?: boolean;
+	name_tracking_enabled?: boolean;
+	postbacks_enabled?: boolean;
+	append_affonso_id_enabled?: boolean;
+	tracking_template_enabled?: boolean;
+	tracking_template?: TrackingTemplateEntry[] | null;
 }
 
-// --- Resource ---
-
 export class ProgramTracking {
-	private readonly httpClient: HttpClient;
-
-	constructor(httpClient: HttpClient) {
-		this.httpClient = httpClient;
-	}
+	constructor(private readonly httpClient: HttpClient) {}
 
 	async retrieve(): Promise<TrackingSettings> {
 		const response = await this.httpClient.request<{ data: TrackingSettings }>({

@@ -107,6 +107,9 @@ export type {
 export type {
 	CommissionDuration,
 	CommissionType,
+	CommissionTypeInput,
+	InvoiceRule,
+	InvoiceRuleInput,
 	PaymentFrequency,
 	PaymentTerms,
 	PaymentTermsUpdateParams,
@@ -114,9 +117,10 @@ export type {
 
 // Resource types — Tracking
 export type {
-	TrackingPostback,
 	TrackingSettings,
 	TrackingSettingsUpdateParams,
+	TrackingTemplateEntry,
+	TrackingTemplateMacro,
 } from "./resources/program-tracking.js";
 
 // Resource types — Restrictions
@@ -131,6 +135,7 @@ export type {
 	GroupCreateParams,
 	GroupExpandField,
 	GroupIncentive,
+	GroupMultiLevelIncentive,
 	GroupListParams,
 	GroupRetrieveParams,
 	GroupUpdateParams,
@@ -139,7 +144,9 @@ export type {
 // Resource types — Creatives
 export type {
 	Creative,
+	CreativeCategory,
 	CreativeCreateParams,
+	CreativeDimensions,
 	CreativeListParams,
 	CreativeUpdateParams,
 } from "./resources/program-creatives.js";
@@ -147,19 +154,18 @@ export type {
 // Resource types — Notifications
 export type {
 	Notification,
+	NotificationType,
 	NotificationUpdateParams,
 } from "./resources/program-notifications.js";
 
 // Resource types — Portal
 export type {
-	PortalCustomTexts,
 	PortalSettings,
 	PortalSettingsUpdateParams,
 } from "./resources/program-portal.js";
 
 // Resource types — Fraud Rules
 export type {
-	FraudRuleConfig,
 	FraudRuleMode,
 	FraudRules,
 	FraudRulesUpdateParams,

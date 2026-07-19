@@ -24,9 +24,12 @@ function createMockClient(
 const TRACKING_FIXTURE = {
 	default_referral_parameter: "ref",
 	enabled_referral_parameters: ["ref", "via"],
-	track_email: true,
-	track_name: false,
-	postbacks: [],
+	email_tracking_enabled: true,
+	name_tracking_enabled: false,
+	postbacks_enabled: true,
+	append_affonso_id_enabled: true,
+	tracking_template_enabled: false,
+	tracking_template: null,
 };
 
 describe("Program Tracking", () => {
@@ -48,17 +51,25 @@ describe("Program Tracking", () => {
 		const client = createMockClient((_url, init) => {
 			expect(init.method).toBe("PATCH");
 			const body = JSON.parse(init.body as string);
-			expect(body.track_name).toBe(true);
+			expect(body.name_tracking_enabled).toBe(true);
+			expect(body.tracking_template_enabled).toBe(true);
+			expect(body.tracking_template).toEqual([
+				{ key: "partner", value: "{tracking_id}", type: "macro" },
+			]);
 			return {
 				status: 200,
 				body: {
 					success: true,
-					data: { ...TRACKING_FIXTURE, track_name: true },
+					data: { ...TRACKING_FIXTURE, name_tracking_enabled: true },
 				},
 			};
 		});
 
-		const settings = await client.program.tracking.update({ track_name: true });
-		expect(settings.track_name).toBe(true);
+		const settings = await client.program.tracking.update({
+			name_tracking_enabled: true,
+			tracking_template_enabled: true,
+			tracking_template: [{ key: "partner", value: "{tracking_id}", type: "macro" }],
+		});
+		expect(settings.name_tracking_enabled).toBe(true);
 	});
 });

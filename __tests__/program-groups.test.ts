@@ -25,8 +25,8 @@ const GROUP_FIXTURE = {
 	id: "grp_1",
 	name: "Default Group",
 	description: null,
+	custom_website_url: null,
 	is_default: true,
-	affiliate_count: 5,
 	created_at: "2025-01-01T00:00:00.000Z",
 };
 
@@ -79,13 +79,17 @@ describe("Program Groups", () => {
 			expect(init.method).toBe("POST");
 			const body = JSON.parse(init.body as string);
 			expect(body.name).toBe("VIP");
+			expect(body.custom_website_url).toBe("https://vip.example.com");
 			return {
 				status: 201,
 				body: { success: true, data: { ...GROUP_FIXTURE, id: "grp_2", name: "VIP" } },
 			};
 		});
 
-		const group = await client.program.groups.create({ name: "VIP" });
+		const group = await client.program.groups.create({
+			name: "VIP",
+			custom_website_url: "https://vip.example.com",
+		});
 		expect(group.name).toBe("VIP");
 	});
 

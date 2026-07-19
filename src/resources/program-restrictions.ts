@@ -1,43 +1,23 @@
 import type { HttpClient } from "../http.js";
 
-// --- Response Types ---
-
 export interface Restrictions {
 	websites: boolean;
 	social_marketing: boolean;
 	organic_social: boolean;
 	email_marketing: boolean;
-	paid_ads: boolean;
-	content_marketing: boolean;
-	coupon_sites: boolean;
-	review_sites: boolean;
-	incentivized_traffic: boolean;
-	trademark_bidding: boolean;
+	mobile_traffic: boolean;
+	search_engine_marketing: boolean;
+	organic_search: boolean;
+	rebrokering: boolean;
+	incent: boolean;
+	brand_bidding: boolean;
+	additional_restrictions: string | null;
 }
 
-// --- Input Types ---
-
-export interface RestrictionsUpdateParams {
-	websites?: boolean;
-	social_marketing?: boolean;
-	organic_social?: boolean;
-	email_marketing?: boolean;
-	paid_ads?: boolean;
-	content_marketing?: boolean;
-	coupon_sites?: boolean;
-	review_sites?: boolean;
-	incentivized_traffic?: boolean;
-	trademark_bidding?: boolean;
-}
-
-// --- Resource ---
+export type RestrictionsUpdateParams = Partial<Restrictions>;
 
 export class ProgramRestrictions {
-	private readonly httpClient: HttpClient;
-
-	constructor(httpClient: HttpClient) {
-		this.httpClient = httpClient;
-	}
+	constructor(private readonly httpClient: HttpClient) {}
 
 	async retrieve(): Promise<Restrictions> {
 		const response = await this.httpClient.request<{ data: Restrictions }>({

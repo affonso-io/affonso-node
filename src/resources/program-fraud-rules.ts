@@ -1,46 +1,24 @@
 import type { HttpClient } from "../http.js";
 
-// --- Response Types ---
-
 export type FraudRuleMode = "off" | "detect" | "block";
 
-export interface FraudRuleConfig {
-	threshold: number | null;
-	window_hours: number | null;
-}
-
 export interface FraudRules {
-	self_referral: FraudRuleMode;
-	self_referral_config: FraudRuleConfig | null;
-	duplicate_ip: FraudRuleMode;
-	duplicate_ip_config: FraudRuleConfig | null;
-	vpn_proxy: FraudRuleMode;
-	vpn_proxy_config: FraudRuleConfig | null;
-	suspicious_conversion: FraudRuleMode;
-	suspicious_conversion_config: FraudRuleConfig | null;
+	self_referral_mode: FraudRuleMode;
+	cross_program_ban_mode: FraudRuleMode;
+	duplicate_payout_mode: FraudRuleMode;
+	suspicious_email_mode: FraudRuleMode;
+	banned_referral_mode: FraudRuleMode;
+	paid_traffic_mode: FraudRuleMode;
+	blocked_country_mode: FraudRuleMode;
+	banned_referral_config: Record<string, unknown> | null;
+	blocked_country_config: Record<string, unknown> | null;
+	paid_traffic_config: Record<string, unknown> | null;
 }
 
-// --- Input Types ---
-
-export interface FraudRulesUpdateParams {
-	self_referral?: FraudRuleMode;
-	self_referral_config?: FraudRuleConfig | null;
-	duplicate_ip?: FraudRuleMode;
-	duplicate_ip_config?: FraudRuleConfig | null;
-	vpn_proxy?: FraudRuleMode;
-	vpn_proxy_config?: FraudRuleConfig | null;
-	suspicious_conversion?: FraudRuleMode;
-	suspicious_conversion_config?: FraudRuleConfig | null;
-}
-
-// --- Resource ---
+export type FraudRulesUpdateParams = Partial<FraudRules>;
 
 export class ProgramFraudRules {
-	private readonly httpClient: HttpClient;
-
-	constructor(httpClient: HttpClient) {
-		this.httpClient = httpClient;
-	}
+	constructor(private readonly httpClient: HttpClient) {}
 
 	async retrieve(): Promise<FraudRules> {
 		const response = await this.httpClient.request<{ data: FraudRules }>({

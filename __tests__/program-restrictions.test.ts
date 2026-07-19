@@ -26,12 +26,13 @@ const RESTRICTIONS_FIXTURE = {
 	social_marketing: true,
 	organic_social: false,
 	email_marketing: true,
-	paid_ads: false,
-	content_marketing: true,
-	coupon_sites: false,
-	review_sites: true,
-	incentivized_traffic: false,
-	trademark_bidding: false,
+	mobile_traffic: false,
+	search_engine_marketing: true,
+	organic_search: true,
+	rebrokering: false,
+	incent: false,
+	brand_bidding: false,
+	additional_restrictions: null,
 };
 
 describe("Program Restrictions", () => {
@@ -46,24 +47,24 @@ describe("Program Restrictions", () => {
 
 		const restrictions = await client.program.restrictions.retrieve();
 		expect(restrictions.websites).toBe(true);
-		expect(restrictions.paid_ads).toBe(false);
+		expect(restrictions.mobile_traffic).toBe(false);
 	});
 
 	it("update sends PATCH with correct body", async () => {
 		const client = createMockClient((_url, init) => {
 			expect(init.method).toBe("PATCH");
 			const body = JSON.parse(init.body as string);
-			expect(body.paid_ads).toBe(true);
+			expect(body.mobile_traffic).toBe(true);
 			return {
 				status: 200,
 				body: {
 					success: true,
-					data: { ...RESTRICTIONS_FIXTURE, paid_ads: true },
+					data: { ...RESTRICTIONS_FIXTURE, mobile_traffic: true },
 				},
 			};
 		});
 
-		const restrictions = await client.program.restrictions.update({ paid_ads: true });
-		expect(restrictions.paid_ads).toBe(true);
+		const restrictions = await client.program.restrictions.update({ mobile_traffic: true });
+		expect(restrictions.mobile_traffic).toBe(true);
 	});
 });

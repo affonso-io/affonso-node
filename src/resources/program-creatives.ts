@@ -2,56 +2,50 @@ import type { HttpClient } from "../http.js";
 import { OffsetPage } from "../pagination.js";
 import type { DeleteResponse, OffsetPaginationMeta, OffsetPaginationParams } from "../types.js";
 
-// --- Response Types ---
+export type CreativeCategory = "brand" | "banner" | "product" | "content" | "video" | "document";
+
+export interface CreativeDimensions {
+	width: number;
+	height: number;
+}
 
 export interface Creative {
 	id: string;
-	name: string;
+	name: string | null;
 	description: string | null;
-	type: string;
+	category: CreativeCategory | null;
+	subcategory: string | null;
 	url: string | null;
-	file_url: string | null;
-	width: number | null;
-	height: number | null;
+	content: string | null;
+	tags: string[];
+	dimensions: CreativeDimensions | null;
+	usage_notes: string | null;
+	restrictions: string | null;
 	created_at: string;
-	updated_at: string | null;
+	updated_at: string;
 }
 
-// --- Query/Input Types ---
-
 export interface CreativeListParams extends OffsetPaginationParams {
-	type?: string;
-	search?: string;
+	category?: string;
 }
 
 export interface CreativeCreateParams {
-	name: string;
+	name?: string | null;
 	description?: string | null;
-	type: string;
+	category?: CreativeCategory | null;
+	subcategory?: string | null;
 	url?: string | null;
-	file_url?: string | null;
-	width?: number | null;
-	height?: number | null;
+	content?: string | null;
+	tags?: string[];
+	dimensions?: CreativeDimensions | null;
+	usage_notes?: string | null;
+	restrictions?: string | null;
 }
 
-export interface CreativeUpdateParams {
-	name?: string;
-	description?: string | null;
-	type?: string;
-	url?: string | null;
-	file_url?: string | null;
-	width?: number | null;
-	height?: number | null;
-}
-
-// --- Resource ---
+export type CreativeUpdateParams = CreativeCreateParams;
 
 export class ProgramCreatives {
-	private readonly httpClient: HttpClient;
-
-	constructor(httpClient: HttpClient) {
-		this.httpClient = httpClient;
-	}
+	constructor(private readonly httpClient: HttpClient) {}
 
 	async list(params?: CreativeListParams): Promise<OffsetPage<Creative>> {
 		const query = params ? { ...params } : {};
@@ -90,7 +84,7 @@ export class ProgramCreatives {
 	}
 
 	async del(id: string): Promise<DeleteResponse> {
-		return this.httpClient.request<DeleteResponse>({
+		return this.httpClient.request({
 			method: "DELETE",
 			path: `/program/creatives/${encodeURIComponent(id)}`,
 		});
