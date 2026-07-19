@@ -10,6 +10,9 @@ export default defineConfig({
 	clean: true,
 	splitting: false,
 	sourcemap: true,
+	outExtension({ format }) {
+		return { js: format === "cjs" ? ".cjs" : ".mjs" };
+	},
 	define: {
 		__SDK_VERSION__: JSON.stringify(version),
 	},
