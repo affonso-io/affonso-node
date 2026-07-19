@@ -22,14 +22,16 @@ function createMockClient(
 }
 
 const FRAUD_RULES_FIXTURE = {
-	self_referral: "block",
-	self_referral_config: null,
-	duplicate_ip: "detect",
-	duplicate_ip_config: { threshold: 5, window_hours: 24 },
-	vpn_proxy: "off",
-	vpn_proxy_config: null,
-	suspicious_conversion: "detect",
-	suspicious_conversion_config: { threshold: 10, window_hours: 1 },
+	self_referral_mode: "block",
+	cross_program_ban_mode: "detect",
+	duplicate_payout_mode: "detect",
+	suspicious_email_mode: "off",
+	banned_referral_mode: "block",
+	paid_traffic_mode: "detect",
+	blocked_country_mode: "off",
+	banned_referral_config: { emails: ["blocked@example.com"] },
+	blocked_country_config: null,
+	paid_traffic_config: { sources: ["search"] },
 };
 
 describe("Program Fraud Rules", () => {
@@ -43,26 +45,34 @@ describe("Program Fraud Rules", () => {
 		});
 
 		const rules = await client.program.fraudRules.retrieve();
-		expect(rules.self_referral).toBe("block");
-		expect(rules.duplicate_ip).toBe("detect");
-		expect(rules.duplicate_ip_config?.threshold).toBe(5);
+		expect(rules?.self_referral_mode).toBe("block");
+		expect(rules?.duplicate_payout_mode).toBe("detect");
+	});
+
+	it("retrieve returns null when fraud rules are not configured", async () => {
+		const client = createMockClient(() => ({
+			status: 200,
+			body: { success: true, data: null },
+		}));
+
+		expect(await client.program.fraudRules.retrieve()).toBeNull();
 	});
 
 	it("update sends PATCH with correct body", async () => {
 		const client = createMockClient((_url, init) => {
 			expect(init.method).toBe("PATCH");
 			const body = JSON.parse(init.body as string);
-			expect(body.vpn_proxy).toBe("block");
+			expect(body.paid_traffic_mode).toBe("block");
 			return {
 				status: 200,
 				body: {
 					success: true,
-					data: { ...FRAUD_RULES_FIXTURE, vpn_proxy: "block" },
+					data: { ...FRAUD_RULES_FIXTURE, paid_traffic_mode: "block" },
 				},
 			};
 		});
 
-		const rules = await client.program.fraudRules.update({ vpn_proxy: "block" });
-		expect(rules.vpn_proxy).toBe("block");
+		const rules = await client.program.fraudRules.update({ paid_traffic_mode: "block" });
+		expect(rules.paid_traffic_mode).toBe("block");
 	});
 });

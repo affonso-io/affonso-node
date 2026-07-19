@@ -30,9 +30,9 @@ export interface Commission {
 	sale_amount: number;
 	sale_amount_currency: string;
 	commission_amount: number;
-	commission_currency: string;
-	status: string;
-	sales_status: string;
+	commission_currency: string | null;
+	status: CommissionStatus;
+	sales_status: SalesStatus;
 	hold_period_days: number | null;
 	payment_intent_id: string | null;
 	invoice_id: string | null;
@@ -68,9 +68,9 @@ export interface CommissionRetrieveParams {
 export interface CommissionCreateParams {
 	referral_id: string;
 	sale_amount: number;
-	sale_amount_currency: string;
+	sale_amount_currency?: string;
 	commission_amount: number;
-	commission_currency: string;
+	commission_currency?: string;
 	is_subscription?: boolean;
 	status?: CommissionStatus;
 	sales_status?: SalesStatus;

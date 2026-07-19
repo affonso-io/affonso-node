@@ -5,8 +5,9 @@ import type { DeleteResponse } from "../types.js";
 
 export interface GroupIncentive {
 	id: string;
+	incentive_id: string;
 	name: string;
-	type: string;
+	incentive_type: string;
 	amount: number;
 	is_percentage: boolean;
 	apply_to: string;
@@ -19,16 +20,23 @@ export interface GroupIncentive {
 	variable_config: unknown;
 }
 
+export interface GroupMultiLevelIncentive {
+	id: string;
+	level: number;
+	calculation_type: string;
+	amount: number;
+}
+
 export interface Group {
 	id: string;
 	name: string;
 	description: string | null;
+	custom_website_url: string | null;
 	is_default: boolean;
-	affiliate_count: number;
 	created_at: string;
 	// Expandable fields
 	incentives?: GroupIncentive[];
-	multi_level_incentives?: unknown[];
+	multi_level_incentives?: GroupMultiLevelIncentive[];
 }
 
 // --- Query/Input Types ---
@@ -46,12 +54,14 @@ export interface GroupRetrieveParams {
 export interface GroupCreateParams {
 	name: string;
 	description?: string | null;
+	custom_website_url?: string | null;
 	is_default?: boolean;
 }
 
 export interface GroupUpdateParams {
 	name?: string;
 	description?: string | null;
+	custom_website_url?: string | null;
 	is_default?: boolean;
 }
 

@@ -26,13 +26,16 @@ const CREATIVE_FIXTURE = {
 	id: "cr_1",
 	name: "Banner 1",
 	description: "A banner",
-	type: "image",
-	url: null,
-	file_url: "https://cdn.example.com/banner.png",
-	width: 728,
-	height: 90,
+	category: "banner" as const,
+	subcategory: "leaderboard",
+	url: "https://cdn.example.com/banner.png",
+	content: null,
+	tags: ["summer"],
+	dimensions: { width: 728, height: 90 },
+	usage_notes: "Use on light backgrounds",
+	restrictions: null,
 	created_at: "2025-01-01T00:00:00.000Z",
-	updated_at: null,
+	updated_at: "2025-01-01T00:00:00.000Z",
 };
 
 describe("Program Creatives", () => {
@@ -66,7 +69,8 @@ describe("Program Creatives", () => {
 			expect(init.method).toBe("POST");
 			const body = JSON.parse(init.body as string);
 			expect(body.name).toBe("Banner 2");
-			expect(body.type).toBe("image");
+			expect(body.category).toBe("banner");
+			expect(body.dimensions).toEqual({ width: 300, height: 250 });
 			return {
 				status: 201,
 				body: { success: true, data: { ...CREATIVE_FIXTURE, id: "cr_2", name: "Banner 2" } },
@@ -75,9 +79,21 @@ describe("Program Creatives", () => {
 
 		const creative = await client.program.creatives.create({
 			name: "Banner 2",
-			type: "image",
+			category: "banner",
+			dimensions: { width: 300, height: 250 },
 		});
 		expect(creative.name).toBe("Banner 2");
+	});
+
+	it("retrieve sends GET with the encoded creative ID", async () => {
+		const client = createMockClient((url, init) => {
+			expect(url).toBe("https://api.test.io/v1/program/creatives/cr%2F1");
+			expect(init.method).toBe("GET");
+			expect(init.body).toBeUndefined();
+			return { status: 200, body: { success: true, data: CREATIVE_FIXTURE } };
+		});
+
+		expect((await client.program.creatives.retrieve("cr/1")).id).toBe("cr_1");
 	});
 
 	it("update sends PATCH with correct body", async () => {

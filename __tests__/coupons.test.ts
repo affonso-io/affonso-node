@@ -35,6 +35,14 @@ const COUPON_FIXTURE = {
 	provider: "stripe",
 	provider_coupon_id: "coupon_abc",
 	provider_promo_code_id: "promo_abc",
+	provider_records: [
+		{
+			provider: "stripe",
+			provider_coupon_id: "coupon_abc",
+			provider_promo_code_id: "promo_abc",
+			created_at: "2025-01-01T00:00:00.000Z",
+		},
+	],
 	created_at: "2025-01-01T00:00:00.000Z",
 	updated_at: null,
 };
@@ -62,6 +70,7 @@ describe("Coupons", () => {
 		expect(page.data[0].provider).toBe("stripe");
 		expect(page.data[0].provider_coupon_id).toBe("coupon_abc");
 		expect(page.data[0].duration_in_months).toBeNull();
+		expect(page.data[0].provider_records[0].provider).toBe("stripe");
 	});
 
 	it("create sends correct body with provider-specific fields", async () => {
@@ -91,6 +100,17 @@ describe("Coupons", () => {
 			duration: "repeating",
 			duration_in_months: 3,
 		});
+	});
+
+	it("retrieve sends GET with the encoded ID and expand query", async () => {
+		const client = createMockClient((url, init) => {
+			expect(url).toBe("https://api.test.io/v1/coupons/coup%2F1?expand=affiliate");
+			expect(init.method).toBe("GET");
+			expect(init.body).toBeUndefined();
+			return { status: 200, body: { success: true, data: COUPON_FIXTURE } };
+		});
+
+		expect((await client.coupons.retrieve("coup/1", { expand: "affiliate" })).id).toBe("coup_1");
 	});
 
 	it("no update method exists (per OpenAPI spec)", () => {

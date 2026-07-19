@@ -2,10 +2,11 @@
 
 Official TypeScript SDK for the [Affonso](https://affonso.io) API.
 
-- Zero dependencies (uses `fetch`)
-- Node 18+ and Browser support
-- ESM + CJS + TypeScript declarations
-- Auto-pagination, retry with backoff, typed errors
+- Complete coverage of all 64 documented API operations
+- Zero runtime dependencies; uses the standard `fetch` and Web Crypto APIs
+- Node.js 18+ and modern browser support
+- ESM, CommonJS, and TypeScript declarations
+- Auto-pagination, retry with backoff, typed errors, and optional HMAC signing
 
 ## Installation
 
@@ -13,151 +14,234 @@ Official TypeScript SDK for the [Affonso](https://affonso.io) API.
 npm install @affonso/sdk
 ```
 
-## Quick Start
+## Quick start
 
 ```ts
-import Affonso from '@affonso/sdk';
+import Affonso from "@affonso/sdk";
 
-const affonso = new Affonso('sk_live_...');
+const affonso = new Affonso("sk_live_...");
 
-// List affiliates (offset pagination)
 const page = await affonso.affiliates.list({ limit: 50 });
-console.log(page.data);        // Affiliate[]
-console.log(page.pagination);  // { page, limit, total, total_pages, has_next_page, has_prev_page }
 
-// Auto-paginate through all pages
 for await (const affiliate of page.autoPaginate()) {
   console.log(affiliate.id);
 }
-
-// CRUD
-const aff = await affonso.affiliates.create({
-  name: 'Max',
-  email: 'max@example.com',
-  program_id: 'prog_123',
-});
-const updated = await affonso.affiliates.update(aff.id, {
-  name: 'Max M.',
-  status: 'approved',
-});
-await affonso.affiliates.del(aff.id);
 ```
 
 ## Configuration
 
 ```ts
-const affonso = new Affonso('sk_live_...', {
-  baseUrl: 'https://api.affonso.io/v1', // default
-  timeout: 30_000,                       // default: 30s
-  maxRetries: 2,                         // default: 2 (retries on 429/5xx)
-  fetch: customFetch,                    // custom fetch for testing/edge
+const affonso = new Affonso("sk_live_...", {
+  baseUrl: "https://api.affonso.io/v1", // default
+  timeout: 30_000,                       // default: 30 seconds
+  maxRetries: 2,                         // retries 429 and 5xx responses
+  signingSecret: "your-s2s-secret",      // optional conversion/event HMAC signing
+  sourceSigningSecrets: {                 // optional per-source HMAC signing
+    custom: "your-custom-source-secret",
+    segment: "your-segment-source-secret",
+  },
+  fetch: customFetch,                    // optional fetch implementation
 });
 ```
+
+When `signingSecret` is set, the SDK automatically signs conversion, refund, event, and source-ingestion requests. Use `sourceSigningSecrets` when the API configures a different secret per source adapter. The signature covers the exact JSON string sent in the request body.
 
 ## Resources
 
 | Resource | Methods |
-|----------|---------|
-| `affiliates` | `list`, `retrieve`, `create`, `update`, `del` |
+| --- | --- |
+| `affiliates` | `list`, `retrieve`, `create`, `update`, `del`, `retrieveOnboardingResponses`, `submitOnboardingResponses`, `createPortalToken` |
 | `referrals` | `list`, `retrieve`, `create`, `update`, `del` |
 | `clicks` | `create` |
+| `signups` | `create` |
 | `commissions` | `list`, `retrieve`, `create`, `update`, `del` |
-| `coupons` | `list`, `retrieve`, `create`, `del` |
+| `conversions` | `create`, `refund` |
+| `events` | `create` |
+| `sources` | `ingest`, `ingestSegment` |
+| `tracking` | `track` |
 | `payouts` | `list`, `retrieve`, `update` |
+| `coupons` | `list`, `retrieve`, `create`, `del` |
+| `embedTokens` | `create` |
+| `marketplace` | `list`, `retrieve` |
+| `onboardingForm` | `retrieve`, `create`, `update`, `del` |
+| `program` | `retrieve`, `update` |
+| `program.paymentTerms` | `retrieve`, `update` |
+| `program.tracking` | `retrieve`, `update` |
+| `program.restrictions` | `retrieve`, `update` |
+| `program.groups` | `list`, `retrieve`, `create`, `update`, `del` |
+| `program.creatives` | `list`, `retrieve`, `create`, `update`, `del` |
+| `program.notifications` | `list`, `update` |
+| `program.portal` | `retrieve`, `update` |
+| `program.fraudRules` | `retrieve`, `update` |
+
+## Onboard an affiliate
+
+Create the team onboarding form:
+
+```ts
+const form = await affonso.onboardingForm.create({
+  name: "Partner application",
+  description: "Tell us how you plan to promote our product.",
+  questions: [
+    {
+      question: "What is your primary channel?",
+      type: "single_choice",
+      is_required: true,
+      options: ["Content", "Email", "Paid media"],
+      order: 0,
+    },
+  ],
+});
+```
+
+Submit an affiliate's answers and mark onboarding complete:
+
+```ts
+await affonso.affiliates.submitOnboardingResponses("aff_123", {
+  responses: [
+    {
+      question_id: form.questions[0].id,
+      answer: "Content",
+    },
+  ],
+  mark_complete: true,
+});
+```
+
+## Track server-side activity
+
+Configure the signing secret used by your Affonso API environment, then create an idempotent conversion:
+
+```ts
+const affonso = new Affonso("sk_live_...", {
+  signingSecret: process.env.AFFONSO_SIGNING_SECRET,
+});
+
+const conversion = await affonso.conversions.create({
+  external_user_id: "customer_123",
+  external_event_id: "order_987",
+  sale_amount: 99,
+  sale_amount_currency: "USD",
+  product_ids: ["pro_plan"],
+});
+```
+
+Send a non-monetary milestone event through the same signed request path:
+
+```ts
+await affonso.events.create({
+  event_name: "demo_booked",
+  event_type: "lead",
+  external_user_id: "customer_123",
+  external_event_id: "demo_456",
+  occurred_at: new Date().toISOString(),
+});
+```
+
+The authenticated `signups.create()` method converts an existing click into a lead:
+
+```ts
+await affonso.signups.create({
+  click_id: "ref_123",
+  email: "customer@example.com",
+  external_user_id: "customer_123",
+});
+```
+
+## Call the public tracking endpoint
+
+`tracking.track()` is a thin, typed wrapper around `POST /track`. It does not collect browser information and is not a replacement for Affonso's browser pixel. Pass consent, advertising identifiers, page context, and user-agent data explicitly.
+
+```ts
+const click = await affonso.tracking.track({
+  programId: "prog_123",
+  trackingId: "partner-name",
+  referrer: "https://example.com/pricing",
+  userAgent: request.headers.get("user-agent") ?? "",
+  hasConsent: true,
+});
+```
 
 ## Pagination
 
-**Offset pagination** (affiliates, commissions, coupons, payouts):
+Affiliates, commissions, coupons, payouts, marketplace programs, and creatives use offset pagination:
 
 ```ts
 const page = await affonso.affiliates.list({ page: 1, limit: 25 });
-const nextPage = await page.getNextPage(); // null if no more pages
+const nextPage = await page.getNextPage();
 ```
 
-**Cursor pagination** (referrals):
+Referrals use cursor pagination:
 
 ```ts
 const page = await affonso.referrals.list({ limit: 25 });
-const nextPage = await page.getNextPage(); // uses starting_after cursor
+const nextPage = await page.getNextPage();
 ```
 
-Both support `autoPaginate()` for iterating through all pages:
+Both page types support asynchronous iteration across all remaining pages:
 
 ```ts
 for await (const item of page.autoPaginate()) {
-  // yields every item across all pages
+  console.log(item.id);
 }
 ```
 
-## Expandable Fields
+## Expand related data
 
-Expand fields are passed as comma-separated strings matching the API:
+Pass expand and include fields as comma-separated strings matching the API:
 
 ```ts
-// Affiliates: promoCodes, commissionOverrides, invoiceDetails, payoutMethod, onboardingResponses
-const affiliate = await affonso.affiliates.retrieve('aff_123', {
-  expand: 'promoCodes,commissionOverrides',
+const affiliate = await affonso.affiliates.retrieve("aff_123", {
+  expand: "promoCodes,commissionOverrides,invoiceDetails,payoutMethod,onboardingResponses",
 });
 
-// Referrals: expand=affiliate, include=stats
-const referral = await affonso.referrals.retrieve('ref_123', {
-  expand: 'affiliate',
-  include: 'stats',
+const referral = await affonso.referrals.retrieve("ref_123", {
+  expand: "affiliate",
+  include: "stats",
 });
 
-// Commissions: affiliate, affiliate_program, referral
 const commissions = await affonso.commissions.list({
-  expand: 'affiliate,referral',
+  expand: "affiliate,referral",
 });
-
-// Coupons: affiliate
-const coupons = await affonso.coupons.list({ expand: 'affiliate' });
 ```
 
-## Error Handling
+## Handle errors
 
 ```ts
 import {
-  AuthenticationError,
+  DuplicateError,
   NotFoundError,
   RateLimitError,
   ValidationError,
-  DuplicateError,
-} from '@affonso/sdk';
+} from "@affonso/sdk";
 
 try {
-  await affonso.affiliates.retrieve('nonexistent');
-} catch (e) {
-  if (e instanceof NotFoundError) {
+  await affonso.affiliates.retrieve("missing");
+} catch (error) {
+  if (error instanceof NotFoundError) {
     // 404 / NOT_FOUND
-  }
-  if (e instanceof RateLimitError) {
-    console.log(e.retryAfter); // seconds until reset
-  }
-  if (e instanceof ValidationError) {
-    console.log(e.details); // field-level errors
-  }
-  if (e instanceof DuplicateError) {
-    console.log(e.field); // conflicting field
+  } else if (error instanceof RateLimitError) {
+    console.log(error.retryAfter);
+  } else if (error instanceof ValidationError) {
+    console.log(error.details);
+  } else if (error instanceof DuplicateError) {
+    console.log(error.field);
   }
 }
 ```
 
-Error hierarchy:
+All SDK errors extend `AffonsoError` and can include `status`, `code`, `field`, `details`, and response `headers`.
 
-```
-AffonsoError (base)
-  ├── AuthenticationError (401 / UNAUTHORIZED)
-  ├── PermissionError     (403 / FORBIDDEN)
-  ├── NotFoundError       (404 / NOT_FOUND)
-  ├── ValidationError     (400 / VALIDATION_ERROR) — has .details[]
-  ├── DuplicateError      (409 / DUPLICATE_ERROR)
-  ├── RateLimitError      (429 / RATE_LIMIT_EXCEEDED) — has .retryAfter
-  ├── InternalError       (5xx)
-  └── ConnectionError     (network/timeout)
-```
+## Migrating from 0.2.x
 
-All errors include: `status`, `code`, `message`, `field?`, `details?`, `headers`.
+Version 1.0 removes program-setting fields that were not accepted by the current API. Update integrations to use the current snake_case fields, including:
+
+- `track_email` → `email_tracking_enabled`
+- `track_name` → `name_tracking_enabled`
+- `postbacks` → `postbacks_enabled`
+- current payment-term, restriction, portal, fraud-rule, creative, and notification models
+
+See [CHANGELOG.md](./CHANGELOG.md) for the full breaking-change summary.
 
 ## License
 

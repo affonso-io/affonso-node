@@ -22,16 +22,19 @@ function createMockClient(
 }
 
 const PORTAL_FIXTURE = {
+	single_program_portal: true,
+	hide_branding: false,
+	hide_details: false,
 	primary_color: "#000000",
-	accent_color: "#ffffff",
-	logo_url: null,
-	favicon_url: null,
-	custom_domain: null,
-	terms_url: null,
-	privacy_url: null,
-	custom_texts: null,
-	onboarding_enabled: true,
-	resources_enabled: false,
+	secondary_color: "#ffffff",
+	show_leaderboard: true,
+	terms_conditions_status: true,
+	terms_conditions_value: "Terms",
+	privacy_policy_status: true,
+	privacy_policy_value: "Privacy",
+	support_email_status: true,
+	support_email_value: "support@example.com",
+	custom_texts: { welcome: "Welcome" },
 };
 
 describe("Program Portal", () => {
@@ -45,8 +48,17 @@ describe("Program Portal", () => {
 		});
 
 		const portal = await client.program.portal.retrieve();
-		expect(portal.primary_color).toBe("#000000");
-		expect(portal.onboarding_enabled).toBe(true);
+		expect(portal?.primary_color).toBe("#000000");
+		expect(portal?.single_program_portal).toBe(true);
+	});
+
+	it("retrieve returns null when portal settings are not configured", async () => {
+		const client = createMockClient(() => ({
+			status: 200,
+			body: { success: true, data: null },
+		}));
+
+		expect(await client.program.portal.retrieve()).toBeNull();
 	});
 
 	it("update sends PATCH with correct body", async () => {
@@ -54,6 +66,7 @@ describe("Program Portal", () => {
 			expect(init.method).toBe("PATCH");
 			const body = JSON.parse(init.body as string);
 			expect(body.primary_color).toBe("#ff0000");
+			expect(body.show_leaderboard).toBe(false);
 			return {
 				status: 200,
 				body: {
@@ -63,7 +76,10 @@ describe("Program Portal", () => {
 			};
 		});
 
-		const portal = await client.program.portal.update({ primary_color: "#ff0000" });
+		const portal = await client.program.portal.update({
+			primary_color: "#ff0000",
+			show_leaderboard: false,
+		});
 		expect(portal.primary_color).toBe("#ff0000");
 	});
 });

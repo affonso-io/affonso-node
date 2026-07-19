@@ -24,16 +24,23 @@ function createMockClient(
 const PROGRAM_FIXTURE = {
 	id: "prog_1",
 	name: "My Program",
+	slug: "my-program",
 	tagline: "Best program",
 	category: "saas",
 	description: "A great program",
 	website_url: "https://example.com",
 	logo_url: null,
 	access_mode: "private",
+	status: "active",
 	affiliate_links_enabled: true,
-	plan: "pro",
-	plan_features: {},
+	default_referral_parameter: "ref",
+	plan: {
+		tier: "growth",
+		postbacks: true,
+		groups_limit: 5,
+	},
 	created_at: "2025-01-01T00:00:00.000Z",
+	updated_at: "2025-01-02T00:00:00.000Z",
 };
 
 describe("Program Settings", () => {
@@ -50,6 +57,7 @@ describe("Program Settings", () => {
 		expect(program.id).toBe("prog_1");
 		expect(program.name).toBe("My Program");
 		expect(program.access_mode).toBe("private");
+		expect(program.plan).toEqual({ tier: "growth", postbacks: true, groups_limit: 5 });
 	});
 
 	it("update sends PATCH with correct body", async () => {

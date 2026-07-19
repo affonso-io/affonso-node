@@ -30,10 +30,20 @@ const MARKETPLACE_PROGRAM_FIXTURE = {
 	description: "A great program",
 	website_url: "https://coolsaas.com",
 	logo_url: null,
-	commission_type: "percentage",
-	commission_rate: 25,
-	cookie_lifetime: 30,
-	created_at: "2025-01-01T00:00:00.000Z",
+	access_mode: "public",
+	currency: "USD",
+	commission: {
+		type: "COMMISSION",
+		value: 25,
+		is_percentage: true,
+		apply_to: "ALL_PLANS",
+		has_multiple_tiers: false,
+	},
+	terms: {
+		cookie_lifetime_days: 30,
+		payment_frequency: "monthly",
+		payment_threshold: 50,
+	},
 };
 
 describe("Marketplace", () => {
@@ -60,13 +70,13 @@ describe("Marketplace", () => {
 		const page = await client.marketplace.list();
 		expect(page).toBeInstanceOf(OffsetPage);
 		expect(page.data[0].name).toBe("Cool SaaS");
-		expect(page.data[0].commission_rate).toBe(25);
+		expect(page.data[0].commission?.value).toBe(25);
+		expect(page.data[0].terms?.cookie_lifetime_days).toBe(30);
 	});
 
 	it("list passes query params", async () => {
 		const client = createMockClient((url) => {
 			expect(url).toContain("category=saas");
-			expect(url).toContain("search=cool");
 			return {
 				status: 200,
 				body: {
@@ -84,7 +94,7 @@ describe("Marketplace", () => {
 			};
 		});
 
-		await client.marketplace.list({ category: "saas", search: "cool" });
+		await client.marketplace.list({ category: "saas" });
 	});
 
 	it("retrieve returns single program", async () => {

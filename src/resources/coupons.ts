@@ -8,6 +8,13 @@ export type DiscountType = "percentage" | "fixed";
 export type Duration = "forever" | "once" | "repeating";
 export type CouponProvider = "stripe" | "dodo" | "polar" | "creem" | "paddle";
 
+export interface CouponProviderRecord {
+	provider: CouponProvider;
+	provider_coupon_id: string | null;
+	provider_promo_code_id: string | null;
+	created_at: string;
+}
+
 export interface Coupon {
 	id: string;
 	affiliate_id: string;
@@ -18,9 +25,10 @@ export interface Coupon {
 	duration: string | null;
 	duration_in_months: number | null;
 	product_ids: string[];
-	provider: string | null;
+	provider: CouponProvider | null;
 	provider_coupon_id: string | null;
 	provider_promo_code_id: string | null;
+	provider_records: CouponProviderRecord[];
 	created_at: string;
 	updated_at: string | null;
 	// Expandable

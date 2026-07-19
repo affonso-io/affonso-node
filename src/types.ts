@@ -59,4 +59,7 @@ export interface RequestOptions {
 	path: string;
 	query?: Record<string, unknown>;
 	body?: unknown;
+	headers?: Record<string, string>;
+	signed?: boolean;
+	signingSecret?: string;
 }

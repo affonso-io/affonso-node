@@ -37,18 +37,31 @@ export type {
 	AffiliateCreateParams,
 	AffiliateExpandField,
 	AffiliateListParams,
+	AffiliateOnboardingResponses,
+	AffiliatePortalToken,
 	AffiliatePromoCode,
 	AffiliateRetrieveParams,
 	AffiliateUpdateParams,
 	CommissionOverride,
 	InvoiceDetails,
 	OnboardingQuestion,
+	OnboardingResponseSubmitParams,
 	OnboardingResponses,
 	PartnershipStatus,
 	PayoutDetails,
 	PayoutMethod,
 	PayoutMethodResponse,
 } from "./resources/affiliates.js";
+
+// Resource types — Onboarding Form
+export type {
+	OnboardingForm,
+	OnboardingFormCreateParams,
+	OnboardingFormQuestion,
+	OnboardingFormUpdateParams,
+	OnboardingQuestionInput,
+	OnboardingQuestionType,
+} from "./resources/onboarding-form.js";
 
 // Resource types — Referrals
 export type {
@@ -76,12 +89,38 @@ export type {
 	SalesStatus,
 } from "./resources/commissions.js";
 
+// Resource types — Server-side tracking
+export type {
+	Conversion,
+	ConversionCreateParams,
+	ConversionInterval,
+	ConversionRefundParams,
+} from "./resources/conversions.js";
+export type {
+	EventCreateParams,
+	EventResult,
+	EventType,
+	S2SEvent,
+} from "./resources/events.js";
+export type { SignupCreateParams } from "./resources/signups.js";
+export type {
+	SegmentTrackParams,
+	SourceAdapter,
+	SourceSigningSecrets,
+} from "./resources/sources.js";
+export type {
+	TrackingDiscount,
+	TrackingResult,
+	TrackingTrackParams,
+} from "./resources/tracking.js";
+
 // Resource types — Coupons
 export type {
 	Coupon,
 	CouponCreateParams,
 	CouponListParams,
 	CouponProvider,
+	CouponProviderRecord,
 	CouponRetrieveParams,
 	DiscountType,
 	Duration,
@@ -99,6 +138,8 @@ export type {
 
 // Resource types — Program Settings
 export type {
+	ProgramPlan,
+	ProgramPlanTier,
 	ProgramSettings,
 	ProgramSettingsUpdateParams,
 } from "./resources/program-settings.js";
@@ -107,6 +148,9 @@ export type {
 export type {
 	CommissionDuration,
 	CommissionType,
+	CommissionTypeInput,
+	InvoiceRule,
+	InvoiceRuleInput,
 	PaymentFrequency,
 	PaymentTerms,
 	PaymentTermsUpdateParams,
@@ -114,9 +158,10 @@ export type {
 
 // Resource types — Tracking
 export type {
-	TrackingPostback,
 	TrackingSettings,
 	TrackingSettingsUpdateParams,
+	TrackingTemplateEntry,
+	TrackingTemplateMacro,
 } from "./resources/program-tracking.js";
 
 // Resource types — Restrictions
@@ -131,6 +176,7 @@ export type {
 	GroupCreateParams,
 	GroupExpandField,
 	GroupIncentive,
+	GroupMultiLevelIncentive,
 	GroupListParams,
 	GroupRetrieveParams,
 	GroupUpdateParams,
@@ -139,7 +185,9 @@ export type {
 // Resource types — Creatives
 export type {
 	Creative,
+	CreativeCategory,
 	CreativeCreateParams,
+	CreativeDimensions,
 	CreativeListParams,
 	CreativeUpdateParams,
 } from "./resources/program-creatives.js";
@@ -147,19 +195,18 @@ export type {
 // Resource types — Notifications
 export type {
 	Notification,
+	NotificationType,
 	NotificationUpdateParams,
 } from "./resources/program-notifications.js";
 
 // Resource types — Portal
 export type {
-	PortalCustomTexts,
 	PortalSettings,
 	PortalSettingsUpdateParams,
 } from "./resources/program-portal.js";
 
 // Resource types — Fraud Rules
 export type {
-	FraudRuleConfig,
 	FraudRuleMode,
 	FraudRules,
 	FraudRulesUpdateParams,
@@ -167,6 +214,7 @@ export type {
 
 // Resource types — Embed Tokens
 export type {
+	EmbedPartner,
 	EmbedToken,
 	EmbedTokenCreateParams,
 } from "./resources/embed-tokens.js";
@@ -174,7 +222,9 @@ export type {
 // Resource types — Marketplace
 export type {
 	MarketplaceListParams,
+	MarketplaceCommission,
 	MarketplaceProgram,
+	MarketplaceTerms,
 } from "./resources/marketplace.js";
 
 // Default export

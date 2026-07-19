@@ -23,11 +23,17 @@ function createMockClient(
 
 const NOTIFICATION_FIXTURE = {
 	id: "notif_1",
-	email_type: "new_affiliate",
-	subject: "New affiliate joined",
-	enabled: true,
-	recipient: "owner",
-	description: "Sent when a new affiliate signs up",
+	email_type_id: "new_affiliate",
+	is_active: true,
+	custom_subject: "New affiliate joined",
+	custom_body: null,
+	type: {
+		name: "New affiliate",
+		description: "Sent when a new affiliate signs up",
+		icon: "user-plus",
+		is_customizable: true,
+		target_audience: "owner",
+	},
 };
 
 describe("Program Notifications", () => {
@@ -42,7 +48,7 @@ describe("Program Notifications", () => {
 
 		const notifications = await client.program.notifications.list();
 		expect(notifications).toHaveLength(1);
-		expect(notifications[0].email_type).toBe("new_affiliate");
+		expect(notifications[0].email_type_id).toBe("new_affiliate");
 	});
 
 	it("update sends PATCH with correct body", async () => {
@@ -50,19 +56,21 @@ describe("Program Notifications", () => {
 			expect(url).toContain("/program/notifications/notif_1");
 			expect(init.method).toBe("PATCH");
 			const body = JSON.parse(init.body as string);
-			expect(body.enabled).toBe(false);
+			expect(body.is_active).toBe(false);
+			expect(body.custom_subject).toBe("Paused");
 			return {
 				status: 200,
 				body: {
 					success: true,
-					data: { ...NOTIFICATION_FIXTURE, enabled: false },
+					data: { ...NOTIFICATION_FIXTURE, is_active: false },
 				},
 			};
 		});
 
 		const notification = await client.program.notifications.update("notif_1", {
-			enabled: false,
+			is_active: false,
+			custom_subject: "Paused",
 		});
-		expect(notification.enabled).toBe(false);
+		expect(notification.is_active).toBe(false);
 	});
 });

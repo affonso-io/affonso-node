@@ -1,6 +1,7 @@
 import type { HttpClient } from "../http.js";
 import { OffsetPage } from "../pagination.js";
 import type { DeleteResponse, OffsetPaginationMeta, OffsetPaginationParams } from "../types.js";
+import type { OnboardingQuestionType } from "./onboarding-form.js";
 
 // --- Response Types (from OpenAPI spec + transformAffiliate) ---
 
@@ -43,6 +44,8 @@ export interface InvoiceDetails {
 	country: string;
 	vat_id: string | null;
 	tax_id: string | null;
+	vat_validated: boolean;
+	vat_validated_at: string | null;
 }
 
 export interface PayoutMethodResponse {
@@ -53,11 +56,11 @@ export interface PayoutMethodResponse {
 export interface OnboardingQuestion {
 	id: string;
 	question: string;
-	type: string;
+	type: OnboardingQuestionType;
 	is_required: boolean;
 	options: string[];
 	order: number;
-	answer: unknown;
+	answer: string | string[] | null;
 }
 
 export interface OnboardingResponses {
@@ -67,13 +70,35 @@ export interface OnboardingResponses {
 	questions: OnboardingQuestion[];
 }
 
+export interface AffiliateOnboardingResponses {
+	form_id: string;
+	form_name: string;
+	form_description: string | null;
+	completed_at: string | null;
+	questions: OnboardingQuestion[];
+}
+
+export interface OnboardingResponseSubmitParams {
+	responses: Array<{
+		question_id: string;
+		answer: string | string[];
+	}>;
+	mark_complete?: boolean;
+}
+
+export interface AffiliatePortalToken {
+	token: string;
+	portalUrl: string;
+	expiresAt: string;
+}
+
 export interface Affiliate {
 	id: string;
 	name: string | null;
 	email: string | null;
 	tracking_id: string | null;
 	source: string | null;
-	partnership_status: string | null;
+	partnership_status: Uppercase<PartnershipStatus> | null;
 	onboarding_completed: boolean;
 	program_id: string | null;
 	group_id: string | null;
@@ -223,5 +248,33 @@ export class Affiliates {
 			method: "DELETE",
 			path: `/affiliates/${encodeURIComponent(id)}`,
 		});
+	}
+
+	async retrieveOnboardingResponses(id: string): Promise<AffiliateOnboardingResponses> {
+		const response = await this.httpClient.request<{ data: AffiliateOnboardingResponses }>({
+			method: "GET",
+			path: `/affiliates/${encodeURIComponent(id)}/onboarding-responses`,
+		});
+		return response.data;
+	}
+
+	async submitOnboardingResponses(
+		id: string,
+		params: OnboardingResponseSubmitParams,
+	): Promise<AffiliateOnboardingResponses> {
+		const response = await this.httpClient.request<{ data: AffiliateOnboardingResponses }>({
+			method: "POST",
+			path: `/affiliates/${encodeURIComponent(id)}/onboarding-responses`,
+			body: params,
+		});
+		return response.data;
+	}
+
+	async createPortalToken(id: string): Promise<AffiliatePortalToken> {
+		const response = await this.httpClient.request<{ data: AffiliatePortalToken }>({
+			method: "POST",
+			path: `/affiliates/${encodeURIComponent(id)}/portal-token`,
+		});
+		return response.data;
 	}
 }

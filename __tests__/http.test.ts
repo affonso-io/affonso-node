@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
+import { createHmac } from "node:crypto";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { NotFoundError } from "../src/errors.js";
 import { HttpClient } from "../src/http.js";
 
@@ -22,9 +23,13 @@ function mockFetch(
 	return { fn, calls };
 }
 
-function createClient(fetchFn: typeof fetch, opts?: { maxRetries?: number; timeout?: number }) {
+function createClient(
+	fetchFn: typeof fetch,
+	opts?: { maxRetries?: number; timeout?: number; signingSecret?: string },
+) {
 	return new HttpClient({
 		apiKey: "sk_test_123",
+		signingSecret: opts?.signingSecret,
 		baseUrl: "https://api.affonso.io/v1",
 		timeout: opts?.timeout ?? 30_000,
 		maxRetries: opts?.maxRetries ?? 0,
@@ -33,12 +38,66 @@ function createClient(fetchFn: typeof fetch, opts?: { maxRetries?: number; timeo
 }
 
 describe("HttpClient", () => {
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
 	it("sends Authorization header", async () => {
 		const { fn, calls } = mockFetch([{ status: 200, body: { success: true, data: { id: "1" } } }]);
 		const client = createClient(fn);
 		await client.request({ method: "GET", path: "/test" });
 
 		expect(calls[0].init.headers).toHaveProperty("Authorization", "Bearer sk_test_123");
+	});
+
+	it("merges request headers without allowing Authorization overrides", async () => {
+		const { fn, calls } = mockFetch([{ status: 200, body: { success: true } }]);
+		const client = createClient(fn);
+		await client.request({
+			method: "GET",
+			path: "/test",
+			headers: { "X-Request-Id": "req_1", Authorization: "Basic invalid" },
+		});
+
+		expect(calls[0].init.headers).toMatchObject({
+			Authorization: "Bearer sk_test_123",
+			"X-Request-Id": "req_1",
+		});
+	});
+
+	it("signs the exact serialized body with HMAC-SHA256", async () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date("2026-07-19T12:00:00.000Z"));
+		const { fn, calls } = mockFetch([{ status: 201, body: { success: true } }]);
+		const client = createClient(fn, { signingSecret: "whsec_test" });
+		const body = { external_event_id: "evt_1", amount: 1299, metadata: { source: "sdk" } };
+
+		await client.request({ method: "POST", path: "/events", body, signed: true });
+
+		const rawBody = JSON.stringify(body);
+		const timestamp = Math.floor(Date.now() / 1000).toString();
+		const expected = createHmac("sha256", "whsec_test")
+			.update(`${timestamp}.${rawBody}`)
+			.digest("hex");
+		expect(calls[0].init.body).toBe(rawBody);
+		expect(calls[0].init.headers).toMatchObject({
+			"X-Affonso-Timestamp": timestamp,
+			"X-Affonso-Signature": expected,
+		});
+	});
+
+	it("omits signing headers when no signing secret is configured", async () => {
+		const { fn, calls } = mockFetch([{ status: 201, body: { success: true } }]);
+		const client = createClient(fn);
+		await client.request({
+			method: "POST",
+			path: "/events",
+			body: { event: "test" },
+			signed: true,
+		});
+
+		expect(calls[0].init.headers).not.toHaveProperty("X-Affonso-Timestamp");
+		expect(calls[0].init.headers).not.toHaveProperty("X-Affonso-Signature");
 	});
 
 	it("serializes query params", async () => {

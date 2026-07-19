@@ -6,10 +6,36 @@ const VERSION = typeof __SDK_VERSION__ !== "undefined" ? __SDK_VERSION__ : "0.1.
 
 export interface HttpClientConfig {
 	apiKey: string;
+	signingSecret?: string;
+	sourceSigningSecrets?: Record<string, string>;
 	baseUrl: string;
 	timeout: number;
 	maxRetries: number;
 	fetch: typeof globalThis.fetch;
+}
+
+function bytesToHex(bytes: Uint8Array): string {
+	return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+export async function createRequestSignature(
+	secret: string,
+	timestamp: string,
+	rawBody: string,
+): Promise<string> {
+	const key = await globalThis.crypto.subtle.importKey(
+		"raw",
+		new TextEncoder().encode(secret),
+		{ name: "HMAC", hash: "SHA-256" },
+		false,
+		["sign"],
+	);
+	const signature = await globalThis.crypto.subtle.sign(
+		"HMAC",
+		key,
+		new TextEncoder().encode(`${timestamp}.${rawBody}`),
+	);
+	return bytesToHex(new Uint8Array(signature));
 }
 
 function buildQueryString(params: Record<string, unknown>): string {
@@ -48,16 +74,33 @@ export class HttpClient {
 		this.config = config;
 	}
 
+	getSourceSigningSecret(source: string): string | undefined {
+		return this.config.sourceSigningSecrets?.[source] ?? this.config.signingSecret;
+	}
+
 	async request<T>(opts: RequestOptions): Promise<T> {
 		const url = `${this.config.baseUrl}${opts.path}${opts.query ? buildQueryString(opts.query) : ""}`;
+		const serializedBody = opts.body === undefined ? undefined : JSON.stringify(opts.body);
 
 		const headers: Record<string, string> = {
-			Authorization: `Bearer ${this.config.apiKey}`,
 			"Content-Type": "application/json",
+			...opts.headers,
+			Authorization: `Bearer ${this.config.apiKey}`,
 		};
 
 		if (isNode()) {
 			headers["User-Agent"] = `affonso-sdk/${VERSION}`;
+		}
+
+		const signingSecret = opts.signingSecret ?? this.config.signingSecret;
+		if (opts.signed && signingSecret && serializedBody !== undefined) {
+			const timestamp = Math.floor(Date.now() / 1000).toString();
+			headers["X-Affonso-Timestamp"] = timestamp;
+			headers["X-Affonso-Signature"] = await createRequestSignature(
+				signingSecret,
+				timestamp,
+				serializedBody,
+			);
 		}
 
 		let lastError: AffonsoError | undefined;
@@ -73,7 +116,7 @@ export class HttpClient {
 				const response = await this.config.fetch(url, {
 					method: opts.method,
 					headers,
-					body: opts.body ? JSON.stringify(opts.body) : undefined,
+					body: serializedBody,
 					signal: controller.signal,
 				});
 

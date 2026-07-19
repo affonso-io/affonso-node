@@ -1,52 +1,28 @@
 import type { HttpClient } from "../http.js";
 
-// --- Response Types ---
-
-export interface PortalCustomTexts {
-	welcome_title: string | null;
-	welcome_description: string | null;
-	dashboard_message: string | null;
-}
-
 export interface PortalSettings {
+	single_program_portal: boolean;
+	hide_branding: boolean;
+	hide_details: boolean;
 	primary_color: string | null;
-	accent_color: string | null;
-	logo_url: string | null;
-	favicon_url: string | null;
-	custom_domain: string | null;
-	terms_url: string | null;
-	privacy_url: string | null;
-	custom_texts: PortalCustomTexts | null;
-	onboarding_enabled: boolean;
-	resources_enabled: boolean;
+	secondary_color: string | null;
+	show_leaderboard: boolean;
+	terms_conditions_status: boolean;
+	terms_conditions_value: string | null;
+	privacy_policy_status: boolean;
+	privacy_policy_value: string | null;
+	support_email_status: boolean;
+	support_email_value: string | null;
+	custom_texts: Record<string, unknown> | null;
 }
 
-// --- Input Types ---
-
-export interface PortalSettingsUpdateParams {
-	primary_color?: string | null;
-	accent_color?: string | null;
-	logo_url?: string | null;
-	favicon_url?: string | null;
-	custom_domain?: string | null;
-	terms_url?: string | null;
-	privacy_url?: string | null;
-	custom_texts?: Partial<PortalCustomTexts> | null;
-	onboarding_enabled?: boolean;
-	resources_enabled?: boolean;
-}
-
-// --- Resource ---
+export type PortalSettingsUpdateParams = Partial<PortalSettings>;
 
 export class ProgramPortal {
-	private readonly httpClient: HttpClient;
+	constructor(private readonly httpClient: HttpClient) {}
 
-	constructor(httpClient: HttpClient) {
-		this.httpClient = httpClient;
-	}
-
-	async retrieve(): Promise<PortalSettings> {
-		const response = await this.httpClient.request<{ data: PortalSettings }>({
+	async retrieve(): Promise<PortalSettings | null> {
+		const response = await this.httpClient.request<{ data: PortalSettings | null }>({
 			method: "GET",
 			path: "/program/portal",
 		});
