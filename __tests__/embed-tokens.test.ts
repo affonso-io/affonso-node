@@ -27,7 +27,7 @@ describe("Embed Tokens", () => {
 			expect(url).toContain("/embed/token");
 			expect(init.method).toBe("POST");
 			const body = JSON.parse(init.body as string);
-			expect(body.programId).toBe("prog_1");
+			expect(body).not.toHaveProperty("programId");
 			expect(body.partner).toEqual({
 				email: "user@test.com",
 				name: "Test User",
@@ -50,7 +50,6 @@ describe("Embed Tokens", () => {
 		});
 
 		const token = await client.embedTokens.create({
-			programId: "prog_1",
 			partner: {
 				email: "user@test.com",
 				name: "Test User",

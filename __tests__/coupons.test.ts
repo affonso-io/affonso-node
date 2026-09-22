@@ -25,7 +25,6 @@ function createMockClient(
 const COUPON_FIXTURE = {
 	id: "coup_1",
 	affiliate_id: "aff_1",
-	program_id: "prog_1",
 	code: "SAVE10",
 	discount_type: "percentage",
 	discount_value: 10,
@@ -71,6 +70,7 @@ describe("Coupons", () => {
 		expect(page.data[0].provider_coupon_id).toBe("coupon_abc");
 		expect(page.data[0].duration_in_months).toBeNull();
 		expect(page.data[0].provider_records[0].provider).toBe("stripe");
+		expect(page.data[0]).not.toHaveProperty("program_id");
 	});
 
 	it("create sends correct body with provider-specific fields", async () => {

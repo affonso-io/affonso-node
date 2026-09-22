@@ -26,7 +26,7 @@ describe("Clicks", () => {
 		const client = createMockClient((_url, init) => {
 			expect(init.method).toBe("POST");
 			const body = JSON.parse(init.body as string);
-			expect(body.programId).toBe("prog_1");
+			expect(body).not.toHaveProperty("programId");
 			expect(body.trackingId).toBe("track_1");
 			return {
 				status: 201,
@@ -35,7 +35,6 @@ describe("Clicks", () => {
 					data: {
 						id: "click_1",
 						tracking_id: "track_1",
-						program_id: "prog_1",
 						created_at: "2025-01-01T00:00:00.000Z",
 					},
 				},
@@ -43,13 +42,12 @@ describe("Clicks", () => {
 		});
 
 		const click = await client.clicks.create({
-			programId: "prog_1",
 			trackingId: "track_1",
 		});
 		// Response uses snake_case per ClickResponse interface
 		expect(click.id).toBe("click_1");
 		expect(click.tracking_id).toBe("track_1");
-		expect(click.program_id).toBe("prog_1");
+		expect(click).not.toHaveProperty("program_id");
 	});
 
 	it("create sends optional UTM and ad click params", async () => {
@@ -65,7 +63,6 @@ describe("Clicks", () => {
 					data: {
 						id: "click_2",
 						tracking_id: "track_1",
-						program_id: "prog_1",
 						created_at: "2025-01-01T00:00:00.000Z",
 					},
 				},
@@ -73,7 +70,6 @@ describe("Clicks", () => {
 		});
 
 		await client.clicks.create({
-			programId: "prog_1",
 			trackingId: "track_1",
 			utmSource: "google",
 			gclid: "abc123",

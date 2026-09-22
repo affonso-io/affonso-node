@@ -15,7 +15,6 @@ export interface EmbedPartner {
 }
 
 export interface EmbedTokenCreateParams {
-	programId: string;
 	partner: EmbedPartner;
 	groupId?: string;
 	externalUserId?: string;

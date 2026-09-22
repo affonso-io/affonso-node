@@ -100,7 +100,6 @@ export interface Affiliate {
 	source: string | null;
 	partnership_status: Uppercase<PartnershipStatus> | null;
 	onboarding_completed: boolean;
-	program_id: string | null;
 	group_id: string | null;
 	external_user_id: string | null;
 	metadata: unknown;
@@ -128,7 +127,6 @@ export interface AffiliateListParams extends OffsetPaginationParams {
 	partnership_status?: PartnershipStatus | null;
 	search?: string;
 	group_id?: string;
-	program_id?: string;
 	sort?: string;
 	dateFrom?: string;
 	dateTo?: string;
@@ -170,7 +168,6 @@ export interface PayoutDetails {
 export interface AffiliateCreateParams {
 	name: string;
 	email: string;
-	program_id: string;
 	tracking_id?: string;
 	group_id?: string;
 	company_name?: string;

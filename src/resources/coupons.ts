@@ -18,7 +18,6 @@ export interface CouponProviderRecord {
 export interface Coupon {
 	id: string;
 	affiliate_id: string;
-	program_id: string;
 	code: string;
 	discount_type: string | null;
 	discount_value: number | null;
@@ -39,7 +38,6 @@ export interface Coupon {
 
 export interface CouponListParams extends OffsetPaginationParams {
 	affiliate_id?: string;
-	program_id?: string;
 	search?: string;
 	sort?: string;
 	expand?: string;

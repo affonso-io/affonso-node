@@ -26,7 +26,6 @@ export interface Commission {
 	id: string;
 	referral_id: string;
 	affiliate_id: string | null;
-	program_id: string | null;
 	sale_amount: number;
 	sale_amount_currency: string;
 	commission_amount: number;
