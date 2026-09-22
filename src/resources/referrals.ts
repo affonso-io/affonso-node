@@ -9,7 +9,6 @@ export type ReferralStatus = "lead" | "trialing" | "customer" | "active" | "canc
 export interface Referral {
 	id: string;
 	affiliate_id: string;
-	program_id: string;
 	email: string | null;
 	customer_id: string | null;
 	external_user_id: string | null;

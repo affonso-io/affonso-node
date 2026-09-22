@@ -5,14 +5,12 @@ import type { HttpClient } from "../http.js";
 export interface Click {
 	id: string;
 	tracking_id: string;
-	program_id: string;
 	created_at: string;
 }
 
 // --- Input Types (from Zod createClickSchema — camelCase request body) ---
 
 export interface ClickCreateParams {
-	programId: string;
 	trackingId: string;
 	createdAt?: string;
 	sub1?: string;

@@ -26,7 +26,6 @@ const COMMISSION_FIXTURE = {
 	id: "com_1",
 	referral_id: "ref_1",
 	affiliate_id: "aff_1",
-	program_id: "prog_1",
 	sale_amount: 99.0,
 	sale_amount_currency: "USD",
 	commission_amount: 9.9,
@@ -63,7 +62,7 @@ describe("Commissions", () => {
 		const page = await client.commissions.list();
 		expect(page).toBeInstanceOf(OffsetPage);
 		expect(page.data[0].affiliate_id).toBe("aff_1");
-		expect(page.data[0].program_id).toBe("prog_1");
+		expect(page.data[0]).not.toHaveProperty("program_id");
 		expect(page.data[0].earning_id).toBe("earn_1");
 	});
 

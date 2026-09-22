@@ -6,7 +6,6 @@ const CONVERSION = {
 	id: "txn_1",
 	referral_id: "ref_1",
 	affiliate_id: "aff_1",
-	program_id: "prog_1",
 	sale_amount: 100,
 	sale_amount_currency: "USD",
 	commission_amount: 20,

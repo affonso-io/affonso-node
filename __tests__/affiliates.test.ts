@@ -30,7 +30,6 @@ const AFFILIATE_FIXTURE = {
 	source: "api",
 	partnership_status: "APPROVED",
 	onboarding_completed: true,
-	program_id: "prog_1",
 	group_id: null,
 	external_user_id: null,
 	metadata: null,
@@ -64,6 +63,7 @@ describe("Affiliates", () => {
 		expect(page.data[0].source).toBe("api");
 		expect(page.data[0].partnership_status).toBe("APPROVED");
 		expect(page.data[0].tracking_id).toBe("max-test");
+		expect(page.data[0]).not.toHaveProperty("program_id");
 	});
 
 	it("list passes query params including expand as string", async () => {
@@ -130,7 +130,7 @@ describe("Affiliates", () => {
 			const body = JSON.parse(init.body as string);
 			expect(body.name).toBe("Max");
 			expect(body.email).toBe("max@test.de");
-			expect(body.program_id).toBe("prog_1");
+			expect(body).not.toHaveProperty("program_id");
 			expect(body.payout_method).toBe("paypal");
 			expect(body.payout_details).toEqual({ email: "max@paypal.de" });
 			return {
@@ -142,7 +142,6 @@ describe("Affiliates", () => {
 		const aff = await client.affiliates.create({
 			name: "Max",
 			email: "max@test.de",
-			program_id: "prog_1",
 			payout_method: "paypal",
 			payout_details: { email: "max@paypal.de" },
 		});
